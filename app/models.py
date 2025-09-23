@@ -13,6 +13,9 @@ class MediqUser(db.Model, UserMixin):
     contact_number = db.Column(db.String(15))
     email = db.Column(db.String(100), unique=True)
 
+    def get_id(self):
+        return str(self.user_id)
+
 class Patient(db.Model):
     __tablename__ = 'patients'
     patient_id = db.Column(db.Integer, primary_key=True)
