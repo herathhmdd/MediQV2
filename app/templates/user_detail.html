@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% block title %}User Details - MediQ Clinic{% endblock %}
+{% block content %}
+<h2>User Details</h2>
+<ul class="list-group">
+    <li class="list-group-item"><strong>ID:</strong> {{ user.user_id }}</li>
+    <li class="list-group-item"><strong>Username:</strong> {{ user.username }}</li>
+    <li class="list-group-item"><strong>Role:</strong> {{ user.clinic_role }}</li>
+    <li class="list-group-item"><strong>Email:</strong> {{ user.email }}</li>
+    <li class="list-group-item"><strong>First Name:</strong> {{ user.first_name }}</li>
+    <li class="list-group-item"><strong>Last Name:</strong> {{ user.last_name }}</li>
+    <li class="list-group-item"><strong>Contact Number:</strong> {{ user.contact_number }}</li>
+</ul>
+<a href="{{ url_for('edit_user', user_id=user.user_id) }}" class="btn btn-warning mt-3">Edit</a>
+<a href="{{ url_for('user_list') }}" class="btn btn-secondary mt-3">Back to List</a>
+{% endblock %}
