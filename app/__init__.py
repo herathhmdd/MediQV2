@@ -7,7 +7,7 @@ import os
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'your_secret_key_here'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:Anuradhapura@localhost:5432/mediq_db_project'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:Anuradhapura@localhost:5432/mediq_project_db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # Email config for password reset (dummy for now)
