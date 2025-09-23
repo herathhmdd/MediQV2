@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+{% block title %}Admin Dashboard - MediQ Clinic{% endblock %}
+{% block content %}
+<h2>Admin Dashboard</h2>
+<ul>
+    <li><a href="{{ url_for('register') }}">Register New User</a></li>
+    <li><a href="#">Manage Users</a></li>
+    <li><a href="#">View Reports (future)</a></li>
+</ul>
+{% endblock %}

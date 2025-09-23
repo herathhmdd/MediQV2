@@ -1,0 +1,12 @@
+# Virtual environment
+venv/
+
+# Pycache
+__pycache__/
+
+# IDE files
+.vscode/
+.idea/
+
+# macOS files
+.DS_Store
