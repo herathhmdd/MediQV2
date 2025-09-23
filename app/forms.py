@@ -1,16 +1,26 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField, SelectField, TextAreaField, IntegerField
 from wtforms.validators import DataRequired, Email, Length, EqualTo
+import re
+from wtforms import ValidationError
 
 class LoginForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired()])
     password = PasswordField('Password', validators=[DataRequired()])
     submit = SubmitField('Login')
 
+def validate_sri_lanka_contact(form, field):
+    pattern = r"^\+94\d{9}$"
+    if not re.match(pattern, field.data):
+        raise ValidationError('Contact number must be in the format +94XXXXXXXXX (9 digits after +94)')
+
 class RegisterForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired(), Length(min=3, max=100)])
     password = PasswordField('Password', validators=[DataRequired(), Length(min=6)])
     confirm_password = PasswordField('Confirm Password', validators=[DataRequired(), EqualTo('password')])
+    first_name = StringField('First Name', validators=[DataRequired(), Length(max=100)])
+    last_name = StringField('Last Name', validators=[DataRequired(), Length(max=100)])
+    contact_number = StringField('Contact Number', validators=[DataRequired(), validate_sri_lanka_contact])
     clinic_role = SelectField('Role', choices=[('Clinic Staff','Clinic Staff'),('Medical Officer','Medical Officer'),('Nurse','Nurse'),('Admin','Admin')], validators=[DataRequired()])
     email = StringField('Email', validators=[DataRequired(), Email()])
     submit = SubmitField('Register')

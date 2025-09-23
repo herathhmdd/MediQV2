@@ -45,7 +45,15 @@ def register():
     form = RegisterForm()
     if form.validate_on_submit():
         hashed_pw = bcrypt.generate_password_hash(form.password.data).decode('utf-8')
-        user = MediqUser(username=form.username.data, password_hash=hashed_pw, clinic_role=form.clinic_role.data, email=form.email.data)
+        user = MediqUser(
+            username=form.username.data,
+            password_hash=hashed_pw,
+            clinic_role=form.clinic_role.data,
+            email=form.email.data,
+            first_name=form.first_name.data,
+            last_name=form.last_name.data,
+            contact_number=form.contact_number.data
+        )
         db.session.add(user)
         db.session.commit()
         flash('User registered successfully', 'success')

@@ -3,26 +3,62 @@
 {% block content %}
 <h2>Register New User</h2>
 <form method="post">
+    {{ form.hidden_tag() }}
     <div class="mb-3">
-        <label for="username" class="form-label">Username</label>
-        <input type="text" class="form-control" id="username" name="username" required>
+        {{ form.username.label(class="form-label") }}
+        {{ form.username(class="form-control") }}
+        {% for error in form.username.errors %}
+            <div class="text-danger small">{{ error }}</div>
+        {% endfor %}
     </div>
     <div class="mb-3">
-        <label for="password" class="form-label">Password</label>
-        <input type="password" class="form-control" id="password" name="password" required>
+        {{ form.password.label(class="form-label") }}
+        {{ form.password(class="form-control") }}
+        {% for error in form.password.errors %}
+            <div class="text-danger small">{{ error }}</div>
+        {% endfor %}
     </div>
     <div class="mb-3">
-        <label for="clinic_role" class="form-label">Role</label>
-        <select class="form-select" id="clinic_role" name="clinic_role" required>
-            <option value="Clinic Staff">Clinic Staff</option>
-            <option value="Medical Officer">Medical Officer</option>
-            <option value="Nurse">Nurse</option>
-            <option value="Admin">Admin</option>
-        </select>
+        {{ form.confirm_password.label(class="form-label") }}
+        {{ form.confirm_password(class="form-control") }}
+        {% for error in form.confirm_password.errors %}
+            <div class="text-danger small">{{ error }}</div>
+        {% endfor %}
     </div>
     <div class="mb-3">
-        <label for="email" class="form-label">Email</label>
-        <input type="email" class="form-control" id="email" name="email" required>
+        {{ form.first_name.label(class="form-label") }}
+        {{ form.first_name(class="form-control") }}
+        {% for error in form.first_name.errors %}
+            <div class="text-danger small">{{ error }}</div>
+        {% endfor %}
+    </div>
+    <div class="mb-3">
+        {{ form.last_name.label(class="form-label") }}
+        {{ form.last_name(class="form-control") }}
+        {% for error in form.last_name.errors %}
+            <div class="text-danger small">{{ error }}</div>
+        {% endfor %}
+    </div>
+    <div class="mb-3">
+        {{ form.contact_number.label(class="form-label") }}
+        {{ form.contact_number(class="form-control") }}
+        {% for error in form.contact_number.errors %}
+            <div class="text-danger small">{{ error }}</div>
+        {% endfor %}
+    </div>
+    <div class="mb-3">
+        {{ form.clinic_role.label(class="form-label") }}
+        {{ form.clinic_role(class="form-select") }}
+        {% for error in form.clinic_role.errors %}
+            <div class="text-danger small">{{ error }}</div>
+        {% endfor %}
+    </div>
+    <div class="mb-3">
+        {{ form.email.label(class="form-label") }}
+        {{ form.email(class="form-control") }}
+        {% for error in form.email.errors %}
+            <div class="text-danger small">{{ error }}</div>
+        {% endfor %}
     </div>
     <button type="submit" class="btn btn-success">Register</button>
 </form>
