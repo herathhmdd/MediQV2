@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+{% block title %}{{ action }} Visit - MediQ Clinic{% endblock %}
+{% block content %}
+<h2>{{ action }} Visit</h2>
+<form method="post">
+    {{ form.hidden_tag() }}
+    <div class="mb-3">
+        {{ form.patient_id.label(class="form-label") }}
+        {{ form.patient_id(class="form-select") }}
+        {% for error in form.patient_id.errors %}
+            <div class="text-danger small">{{ error }}</div>
+        {% endfor %}
+    </div>
+    <div class="mb-3">
+        {{ form.queue_number.label(class="form-label") }}
+        {{ form.queue_number(class="form-control") }}
+        {% for error in form.queue_number.errors %}
+            <div class="text-danger small">{{ error }}</div>
+        {% endfor %}
+    </div>
+    <div class="mb-3">
+        {{ form.mo_assigned_id.label(class="form-label") }}
+        {{ form.mo_assigned_id(class="form-select") }}
+        {% for error in form.mo_assigned_id.errors %}
+            <div class="text-danger small">{{ error }}</div>
+        {% endfor %}
+    </div>
+    <div class="mb-3">
+        {{ form.nurse_assigned_id.label(class="form-label") }}
+        {{ form.nurse_assigned_id(class="form-select") }}
+        {% for error in form.nurse_assigned_id.errors %}
+            <div class="text-danger small">{{ error }}</div>
+        {% endfor %}
+    </div>
+    <div class="mb-3">
+        {{ form.visit_date.label(class="form-label") }}
+        {{ form.visit_date(class="form-control") }}
+        {% for error in form.visit_date.errors %}
+            <div class="text-danger small">{{ error }}</div>
+        {% endfor %}
+    </div>
+    <div class="mb-3">
+        {{ form.status.label(class="form-label") }}
+        {{ form.status(class="form-control") }}
+        {% for error in form.status.errors %}
+            <div class="text-danger small">{{ error }}</div>
+        {% endfor %}
+    </div>
+    <button type="submit" class="btn btn-success">Save</button>
+    <a href="{{ url_for('visit_list') }}" class="btn btn-secondary">Cancel</a>
+</form>
+{% endblock %}

@@ -1,3 +1,11 @@
+class PatientVisitForm(FlaskForm):
+    patient_id = SelectField('Patient', coerce=int, validators=[DataRequired()])
+    queue_number = IntegerField('Queue Number', validators=[DataRequired()])
+    mo_assigned_id = SelectField('MO Assigned', coerce=int)
+    nurse_assigned_id = SelectField('Nurse Assigned', coerce=int)
+    visit_date = StringField('Visit Date', validators=[DataRequired()])
+    status = StringField('Status', validators=[DataRequired(), Length(max=50)])
+    submit = SubmitField('Save')
 class PatientForm(FlaskForm):
     nic = StringField('NIC', validators=[DataRequired(), Length(max=50)])
     name = StringField('Name', validators=[DataRequired(), Length(max=255)])

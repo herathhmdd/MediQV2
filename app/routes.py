@@ -1,3 +1,73 @@
+# Patient Visits: List all
+@app.route('/visits')
+@login_required
+def visit_list():
+    visits = PatientVisit.query.order_by(PatientVisit.queue_number).all()
+    return render_template('visit_list.html', visits=visits)
+
+# Patient Visits: Create
+@app.route('/visits/new', methods=['GET', 'POST'])
+@login_required
+def create_visit():
+    from app.forms import PatientVisitForm
+    form = PatientVisitForm()
+    # Populate select fields
+    form.patient_id.choices = [(p.patient_id, p.name) for p in Patient.query.all()]
+    form.mo_assigned_id.choices = [(u.user_id, u.first_name or u.username) for u in MediqUser.query.filter_by(clinic_role='Medical Officer').all()]
+    form.nurse_assigned_id.choices = [(u.user_id, u.first_name or u.username) for u in MediqUser.query.filter_by(clinic_role='Nurse').all()]
+    if form.validate_on_submit():
+        visit = PatientVisit(
+            patient_id=form.patient_id.data,
+            queue_number=form.queue_number.data,
+            mo_assigned_id=form.mo_assigned_id.data,
+            nurse_assigned_id=form.nurse_assigned_id.data,
+            visit_date=form.visit_date.data,
+            status=form.status.data
+        )
+        db.session.add(visit)
+        db.session.commit()
+        flash('Patient visit created successfully', 'success')
+        return redirect(url_for('visit_list'))
+    return render_template('visit_form.html', form=form, action='Create')
+
+# Patient Visits: View
+@app.route('/visits/<int:visit_id>')
+@login_required
+def visit_detail(visit_id):
+    visit = PatientVisit.query.get_or_404(visit_id)
+    return render_template('visit_detail.html', visit=visit)
+
+# Patient Visits: Edit
+@app.route('/visits/<int:visit_id>/edit', methods=['GET', 'POST'])
+@login_required
+def edit_visit(visit_id):
+    visit = PatientVisit.query.get_or_404(visit_id)
+    from app.forms import PatientVisitForm
+    form = PatientVisitForm(obj=visit)
+    form.patient_id.choices = [(p.patient_id, p.name) for p in Patient.query.all()]
+    form.mo_assigned_id.choices = [(u.user_id, u.first_name or u.username) for u in MediqUser.query.filter_by(clinic_role='Medical Officer').all()]
+    form.nurse_assigned_id.choices = [(u.user_id, u.first_name or u.username) for u in MediqUser.query.filter_by(clinic_role='Nurse').all()]
+    if form.validate_on_submit():
+        visit.patient_id = form.patient_id.data
+        visit.queue_number = form.queue_number.data
+        visit.mo_assigned_id = form.mo_assigned_id.data
+        visit.nurse_assigned_id = form.nurse_assigned_id.data
+        visit.visit_date = form.visit_date.data
+        visit.status = form.status.data
+        db.session.commit()
+        flash('Patient visit updated successfully', 'success')
+        return redirect(url_for('visit_list'))
+    return render_template('visit_form.html', form=form, action='Edit')
+
+# Patient Visits: Delete
+@app.route('/visits/<int:visit_id>/delete', methods=['POST'])
+@login_required
+def delete_visit(visit_id):
+    visit = PatientVisit.query.get_or_404(visit_id)
+    db.session.delete(visit)
+    db.session.commit()
+    flash('Patient visit deleted', 'info')
+    return redirect(url_for('visit_list'))
 # Patients: List all
 @app.route('/patients')
 @login_required
