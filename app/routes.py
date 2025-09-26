@@ -1,3 +1,22 @@
+# MO Dashboard: Show queue and actions
+@app.route('/mo_dashboard')
+@login_required
+def mo_dashboard():
+    if current_user.clinic_role != 'Medical Officer':
+        abort(403)
+    # Patients waiting for MO
+    visits = PatientVisit.query.filter_by(status='Waiting for MO').order_by(PatientVisit.queue_number).all()
+    return render_template('mo_dashboard.html', visits=visits)
+
+# Nurse Dashboard: Show queue and actions
+@app.route('/nurse_dashboard')
+@login_required
+def nurse_dashboard():
+    if current_user.clinic_role != 'Nurse':
+        abort(403)
+    # Patients waiting for Nurse
+    visits = PatientVisit.query.filter_by(status='Waiting for Nurse').order_by(PatientVisit.queue_number).all()
+    return render_template('nurse_dashboard.html', visits=visits)
 # Medical Records: List all
 @app.route('/records')
 @login_required
