@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+{% block title %}{{ action }} Medical Record - MediQ Clinic{% endblock %}
+{% block content %}
+<h2>{{ action }} Medical Record</h2>
+<form method="post">
+    {{ form.hidden_tag() }}
+    <div class="mb-3">
+        {{ form.patient_id.label(class="form-label") }}
+        {{ form.patient_id(class="form-select") }}
+        {% for error in form.patient_id.errors %}
+            <div class="text-danger small">{{ error }}</div>
+        {% endfor %}
+    </div>
+    <div class="mb-3">
+        {{ form.visit_id.label(class="form-label") }}
+        {{ form.visit_id(class="form-select") }}
+        {% for error in form.visit_id.errors %}
+            <div class="text-danger small">{{ error }}</div>
+        {% endfor %}
+    </div>
+    <div class="mb-3">
+        {{ form.history.label(class="form-label") }}
+        {{ form.history(class="form-control") }}
+        {% for error in form.history.errors %}
+            <div class="text-danger small">{{ error }}</div>
+        {% endfor %}
+    </div>
+    <div class="mb-3">
+        {{ form.examination_notes.label(class="form-label") }}
+        {{ form.examination_notes(class="form-control") }}
+        {% for error in form.examination_notes.errors %}
+            <div class="text-danger small">{{ error }}</div>
+        {% endfor %}
+    </div>
+    <div class="mb-3">
+        {{ form.treatment_plan.label(class="form-label") }}
+        {{ form.treatment_plan(class="form-control") }}
+        {% for error in form.treatment_plan.errors %}
+            <div class="text-danger small">{{ error }}</div>
+        {% endfor %}
+    </div>
+    <div class="mb-3">
+        {{ form.examined_by.label(class="form-label") }}
+        {{ form.examined_by(class="form-select") }}
+        {% for error in form.examined_by.errors %}
+            <div class="text-danger small">{{ error }}</div>
+        {% endfor %}
+    </div>
+    <button type="submit" class="btn btn-success">Save</button>
+    <a href="{{ url_for('record_list') }}" class="btn btn-secondary">Cancel</a>
+</form>
+{% endblock %}

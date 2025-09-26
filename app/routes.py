@@ -1,3 +1,72 @@
+# Medical Records: List all
+@app.route('/records')
+@login_required
+def record_list():
+    records = MedicalRecord.query.order_by(MedicalRecord.record_id.desc()).all()
+    return render_template('record_list.html', records=records)
+
+# Medical Records: Create
+@app.route('/records/new', methods=['GET', 'POST'])
+@login_required
+def create_record():
+    from app.forms import MedicalRecordForm
+    form = MedicalRecordForm()
+    form.patient_id.choices = [(p.patient_id, p.name) for p in Patient.query.all()]
+    form.visit_id.choices = [(v.visit_id, f"{v.visit_id} - {v.visit_date}") for v in PatientVisit.query.all()]
+    form.examined_by.choices = [(u.user_id, u.first_name or u.username) for u in MediqUser.query.filter_by(clinic_role='Medical Officer').all()]
+    if form.validate_on_submit():
+        record = MedicalRecord(
+            patient_id=form.patient_id.data,
+            visit_id=form.visit_id.data,
+            history=form.history.data,
+            examination_notes=form.examination_notes.data,
+            treatment_plan=form.treatment_plan.data,
+            examined_by=form.examined_by.data
+        )
+        db.session.add(record)
+        db.session.commit()
+        flash('Medical record created successfully', 'success')
+        return redirect(url_for('record_list'))
+    return render_template('record_form.html', form=form, action='Create')
+
+# Medical Records: View
+@app.route('/records/<int:record_id>')
+@login_required
+def record_detail(record_id):
+    record = MedicalRecord.query.get_or_404(record_id)
+    return render_template('record_detail.html', record=record)
+
+# Medical Records: Edit
+@app.route('/records/<int:record_id>/edit', methods=['GET', 'POST'])
+@login_required
+def edit_record(record_id):
+    record = MedicalRecord.query.get_or_404(record_id)
+    from app.forms import MedicalRecordForm
+    form = MedicalRecordForm(obj=record)
+    form.patient_id.choices = [(p.patient_id, p.name) for p in Patient.query.all()]
+    form.visit_id.choices = [(v.visit_id, f"{v.visit_id} - {v.visit_date}") for v in PatientVisit.query.all()]
+    form.examined_by.choices = [(u.user_id, u.first_name or u.username) for u in MediqUser.query.filter_by(clinic_role='Medical Officer').all()]
+    if form.validate_on_submit():
+        record.patient_id = form.patient_id.data
+        record.visit_id = form.visit_id.data
+        record.history = form.history.data
+        record.examination_notes = form.examination_notes.data
+        record.treatment_plan = form.treatment_plan.data
+        record.examined_by = form.examined_by.data
+        db.session.commit()
+        flash('Medical record updated successfully', 'success')
+        return redirect(url_for('record_list'))
+    return render_template('record_form.html', form=form, action='Edit')
+
+# Medical Records: Delete
+@app.route('/records/<int:record_id>/delete', methods=['POST'])
+@login_required
+def delete_record(record_id):
+    record = MedicalRecord.query.get_or_404(record_id)
+    db.session.delete(record)
+    db.session.commit()
+    flash('Medical record deleted', 'info')
+    return redirect(url_for('record_list'))
 # Patient Visits: List all
 @app.route('/visits')
 @login_required

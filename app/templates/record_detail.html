@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% block title %}Record Details - MediQ Clinic{% endblock %}
+{% block content %}
+<h2>Record Details</h2>
+<ul class="list-group">
+    <li class="list-group-item"><strong>ID:</strong> {{ record.record_id }}</li>
+    <li class="list-group-item"><strong>Patient:</strong> {{ record.patient_id }}</li>
+    <li class="list-group-item"><strong>Visit:</strong> {{ record.visit_id }}</li>
+    <li class="list-group-item"><strong>History:</strong> {{ record.history }}</li>
+    <li class="list-group-item"><strong>Examination Notes:</strong> {{ record.examination_notes }}</li>
+    <li class="list-group-item"><strong>Treatment Plan:</strong> {{ record.treatment_plan }}</li>
+    <li class="list-group-item"><strong>Examined By:</strong> {{ record.examined_by }}</li>
+</ul>
+<a href="{{ url_for('edit_record', record_id=record.record_id) }}" class="btn btn-warning mt-3">Edit</a>
+<a href="{{ url_for('record_list') }}" class="btn btn-secondary mt-3">Back to List</a>
+{% endblock %}
