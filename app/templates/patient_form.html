@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% block title %}{{ action }} Patient - MediQ Clinic{% endblock %}
+{% block content %}
+<h2>{{ action }} Patient</h2>
+<form method="post">
+    {{ form.hidden_tag() }}
+    <div class="mb-3">
+        {{ form.nic.label(class="form-label") }}
+        {{ form.nic(class="form-control") }}
+        {% for error in form.nic.errors %}
+            <div class="text-danger small">{{ error }}</div>
+        {% endfor %}
+    </div>
+    <div class="mb-3">
+        {{ form.name.label(class="form-label") }}
+        {{ form.name(class="form-control") }}
+        {% for error in form.name.errors %}
+            <div class="text-danger small">{{ error }}</div>
+        {% endfor %}
+    </div>
+    <div class="mb-3">
+        {{ form.contact_info.label(class="form-label") }}
+        {{ form.contact_info(class="form-control") }}
+        {% for error in form.contact_info.errors %}
+            <div class="text-danger small">{{ error }}</div>
+        {% endfor %}
+    </div>
+    <div class="mb-3">
+        {{ form.red_blue_token.label(class="form-label") }}
+        {{ form.red_blue_token(class="form-select") }}
+        {% for error in form.red_blue_token.errors %}
+            <div class="text-danger small">{{ error }}</div>
+        {% endfor %}
+    </div>
+    <div class="mb-3">
+        {{ form.current_status.label(class="form-label") }}
+        {{ form.current_status(class="form-control") }}
+        {% for error in form.current_status.errors %}
+            <div class="text-danger small">{{ error }}</div>
+        {% endfor %}
+    </div>
+    <button type="submit" class="btn btn-success">Save</button>
+    <a href="{{ url_for('patient_list') }}" class="btn btn-secondary">Cancel</a>
+</form>
+{% endblock %}

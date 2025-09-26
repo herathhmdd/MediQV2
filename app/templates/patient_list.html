@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% block title %}Patients - MediQ Clinic{% endblock %}
+{% block content %}
+<h2>Patients</h2>
+<a href="{{ url_for('create_patient') }}" class="btn btn-success mb-3">Add Patient</a>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>NIC</th>
+            <th>Name</th>
+            <th>Contact Info</th>
+            <th>Token</th>
+            <th>Status</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for patient in patients %}
+        <tr>
+            <td>{{ patient.patient_id }}</td>
+            <td>{{ patient.nic }}</td>
+            <td>{{ patient.name }}</td>
+            <td>{{ patient.contact_info }}</td>
+            <td>{{ patient.red_blue_token }}</td>
+            <td>{{ patient.current_status }}</td>
+            <td>
+                <a href="{{ url_for('patient_detail', patient_id=patient.patient_id) }}" class="btn btn-info btn-sm">View</a>
+                <a href="{{ url_for('edit_patient', patient_id=patient.patient_id) }}" class="btn btn-warning btn-sm">Edit</a>
+                <form action="{{ url_for('delete_patient', patient_id=patient.patient_id) }}" method="post" style="display:inline;">
+                    <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Delete this patient?');">Delete</button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

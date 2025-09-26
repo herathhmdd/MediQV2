@@ -1,3 +1,74 @@
+# Patients: List all
+@app.route('/patients')
+@login_required
+def patient_list():
+    if current_user.clinic_role not in ['Admin', 'Clinic Staff', 'Medical Officer', 'Nurse']:
+        abort(403)
+    patients = Patient.query.all()
+    return render_template('patient_list.html', patients=patients)
+
+# Patients: Create
+@app.route('/patients/new', methods=['GET', 'POST'])
+@login_required
+def create_patient():
+    if current_user.clinic_role not in ['Admin', 'Clinic Staff']:
+        abort(403)
+    from app.forms import PatientForm
+    form = PatientForm()
+    if form.validate_on_submit():
+        patient = Patient(
+            nic=form.nic.data,
+            name=form.name.data,
+            contact_info=form.contact_info.data,
+            red_blue_token=form.red_blue_token.data,
+            current_status=form.current_status.data
+        )
+        db.session.add(patient)
+        db.session.commit()
+        flash('Patient created successfully', 'success')
+        return redirect(url_for('patient_list'))
+    return render_template('patient_form.html', form=form, action='Create')
+
+# Patients: View
+@app.route('/patients/<int:patient_id>')
+@login_required
+def patient_detail(patient_id):
+    if current_user.clinic_role not in ['Admin', 'Clinic Staff', 'Medical Officer', 'Nurse']:
+        abort(403)
+    patient = Patient.query.get_or_404(patient_id)
+    return render_template('patient_detail.html', patient=patient)
+
+# Patients: Edit
+@app.route('/patients/<int:patient_id>/edit', methods=['GET', 'POST'])
+@login_required
+def edit_patient(patient_id):
+    if current_user.clinic_role not in ['Admin', 'Clinic Staff']:
+        abort(403)
+    patient = Patient.query.get_or_404(patient_id)
+    from app.forms import PatientForm
+    form = PatientForm(obj=patient)
+    if form.validate_on_submit():
+        patient.nic = form.nic.data
+        patient.name = form.name.data
+        patient.contact_info = form.contact_info.data
+        patient.red_blue_token = form.red_blue_token.data
+        patient.current_status = form.current_status.data
+        db.session.commit()
+        flash('Patient updated successfully', 'success')
+        return redirect(url_for('patient_list'))
+    return render_template('patient_form.html', form=form, action='Edit')
+
+# Patients: Delete
+@app.route('/patients/<int:patient_id>/delete', methods=['POST'])
+@login_required
+def delete_patient(patient_id):
+    if current_user.clinic_role not in ['Admin', 'Clinic Staff']:
+        abort(403)
+    patient = Patient.query.get_or_404(patient_id)
+    db.session.delete(patient)
+    db.session.commit()
+    flash('Patient deleted', 'info')
+    return redirect(url_for('patient_list'))
 
 from flask import render_template, redirect, url_for, flash, request, session, abort
 from flask_login import login_user, logout_user, login_required, current_user

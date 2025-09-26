@@ -1,3 +1,10 @@
+class PatientForm(FlaskForm):
+    nic = StringField('NIC', validators=[DataRequired(), Length(max=50)])
+    name = StringField('Name', validators=[DataRequired(), Length(max=255)])
+    contact_info = StringField('Contact Info', validators=[Length(max=255)])
+    red_blue_token = SelectField('Token', choices=[('Red', 'Red'), ('Blue', 'Blue')], validators=[DataRequired()])
+    current_status = StringField('Current Status', validators=[Length(max=50)])
+    submit = SubmitField('Save')
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField, SelectField, TextAreaField, IntegerField
 from wtforms.validators import DataRequired, Email, Length, EqualTo
