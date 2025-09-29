@@ -2,6 +2,33 @@
 {% block title %}Patient Visits - MediQ Clinic{% endblock %}
 {% block content %}
 <h2>Patient Visits</h2>
+<form method="get" class="row g-3 mb-3">
+    <div class="col-md-2">
+        <input type="text" name="patient" class="form-control" placeholder="Patient Name" value="{{ request.args.get('patient', '') }}">
+    </div>
+    <div class="col-md-2">
+        <input type="text" name="mo" class="form-control" placeholder="MO Name" value="{{ request.args.get('mo', '') }}">
+    </div>
+    <div class="col-md-2">
+        <input type="text" name="nurse" class="form-control" placeholder="Nurse Name" value="{{ request.args.get('nurse', '') }}">
+    </div>
+    <div class="col-md-2">
+        <input type="date" name="date" class="form-control" value="{{ request.args.get('date', '') or (now.strftime('%Y-%m-%d') if now else '') }}">
+    </div>
+    <div class="col-md-2">
+        <select name="status" class="form-select">
+            <option value="">Status</option>
+            <option value="waiting" {% if request.args.get('status') == 'waiting' %}selected{% endif %}>Waiting</option>
+            <option value="in_consultation" {% if request.args.get('status') == 'in_consultation' %}selected{% endif %}>In Consultation</option>
+            <option value="with_nurse" {% if request.args.get('status') == 'with_nurse' %}selected{% endif %}>With Nurse</option>
+            <option value="at_pharmacy" {% if request.args.get('status') == 'at_pharmacy' %}selected{% endif %}>At Pharmacy</option>
+            <option value="completed" {% if request.args.get('status') == 'completed' %}selected{% endif %}>Completed</option>
+        </select>
+    </div>
+    <div class="col-md-2">
+        <button type="submit" class="btn btn-primary w-100">Search</button>
+    </div>
+</form>
 <a href="{{ url_for('create_visit') }}" class="btn btn-success mb-3">Add Visit</a>
 <table class="table table-striped">
     <thead>

@@ -96,8 +96,33 @@ def delete_record(record_id):
 @app.route('/visits')
 @login_required
 def visit_list():
-    visits = PatientVisit.query.order_by(PatientVisit.queue_number).all()
-    return render_template('visit_list.html', visits=visits)
+    import datetime
+    from sqlalchemy import and_
+    # Get filter params
+    patient = request.args.get('patient', '').strip()
+    mo = request.args.get('mo', '').strip()
+    nurse = request.args.get('nurse', '').strip()
+    date_str = request.args.get('date', '')
+    status = request.args.get('status', '').strip()
+    # Default date to today
+    if not date_str:
+        now = datetime.date.today()
+        date_str = now.strftime('%Y-%m-%d')
+    else:
+        now = datetime.datetime.strptime(date_str, '%Y-%m-%d').date()
+    # Build query
+    query = PatientVisit.query.join(Patient)
+    filters = [PatientVisit.visit_date == now]
+    if patient:
+        filters.append(Patient.name.ilike(f'%{patient}%'))
+    if mo:
+        filters.append(PatientVisit.mo_assigned.has(MediqUser.first_name.ilike(f'%{mo}%')))
+    if nurse:
+        filters.append(PatientVisit.nurse_assigned.has(MediqUser.first_name.ilike(f'%{nurse}%')))
+    if status:
+        filters.append(PatientVisit.status == status)
+    visits = query.filter(and_(*filters)).order_by(PatientVisit.queue_number).all()
+    return render_template('visit_list.html', visits=visits, now=now)
 
 # Patient Visits: Create
 @app.route('/visits/new', methods=['GET', 'POST'])
