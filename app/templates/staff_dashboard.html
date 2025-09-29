@@ -3,8 +3,8 @@
 {% block content %}
 <h2>Clinic Staff Dashboard</h2>
 <ul>
-    <li><a href="#">Register Patient</a></li>
-    <li><a href="#">Manage Patients</a></li>
-    <li><a href="#">Patient Queue</a></li>
+    <li><a href="{{ url_for('new_patient') }}">Register Patient</a></li>
+    <li><a href="{{ url_for('patient_list') }}">Manage Patients</a></li>
+    <li><a href="{{ url_for('visit_list') }}">Patient Queue</a></li>
 </ul>
 {% endblock %}
