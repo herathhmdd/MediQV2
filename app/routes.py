@@ -109,10 +109,15 @@ def create_visit():
     form.patient_id.choices = [(p.patient_id, p.name) for p in Patient.query.all()]
     form.mo_assigned_id.choices = [(u.user_id, u.first_name or u.username) for u in MediqUser.query.filter_by(clinic_role='Medical Officer').all()]
     form.nurse_assigned_id.choices = [(u.user_id, u.first_name or u.username) for u in MediqUser.query.filter_by(clinic_role='Nurse').all()]
+    import datetime
+    today = form.visit_date.data or datetime.date.today()
+    # Query for highest queue number for today
+    highest_queue = db.session.query(db.func.max(PatientVisit.queue_number)).filter(PatientVisit.visit_date == today).scalar()
+    next_queue_number = 1 if highest_queue is None else highest_queue + 1
     if form.validate_on_submit():
         visit = PatientVisit(
             patient_id=form.patient_id.data,
-            queue_number=form.queue_number.data,
+            queue_number=next_queue_number,
             mo_assigned_id=form.mo_assigned_id.data,
             nurse_assigned_id=form.nurse_assigned_id.data,
             visit_date=form.visit_date.data,
@@ -122,6 +127,8 @@ def create_visit():
         db.session.commit()
         flash('Patient visit created successfully', 'success')
         return redirect(url_for('visit_list'))
+    # Pre-populate queue_number field for display
+    form.queue_number.data = next_queue_number
     return render_template('visit_form.html', form=form, action='Create')
 
 # Patient Visits: View
