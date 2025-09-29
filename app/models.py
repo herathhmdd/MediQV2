@@ -33,6 +33,11 @@ class PatientVisit(db.Model):
     nurse_assigned_id = db.Column(db.Integer, db.ForeignKey('mediq_users.user_id'))
     visit_date = db.Column(db.Date, default=date.today)
     status = db.Column(db.Enum('waiting', 'in_consultation', 'with_nurse', 'at_pharmacy', 'completed', name='patient_visit_status'), default='waiting')
+    
+    # Relationships
+    patient = db.relationship('Patient', backref='visits')
+    mo_assigned = db.relationship('MediqUser', foreign_keys=[mo_assigned_id], backref='mo_visits')
+    nurse_assigned = db.relationship('MediqUser', foreign_keys=[nurse_assigned_id], backref='nurse_visits')
 
 class MedicalRecord(db.Model):
     __tablename__ = 'medical_records'

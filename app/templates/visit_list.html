@@ -20,10 +20,10 @@
         {% for visit in visits %}
         <tr>
             <td>{{ visit.visit_id }}</td>
-            <td>{{ visit.patient_id }}</td>
+            <td>{{ visit.patient.name if visit.patient else visit.patient_id }}</td>
             <td>{{ visit.queue_number }}</td>
-            <td>{{ visit.mo_assigned_id }}</td>
-            <td>{{ visit.nurse_assigned_id }}</td>
+            <td>{{ visit.mo_assigned.first_name if visit.mo_assigned else 'Not Assigned' }}</td>
+            <td>{{ visit.nurse_assigned.first_name if visit.nurse_assigned else 'Not Assigned' }}</td>
             <td>{{ visit.visit_date }}</td>
             <td>{{ visit.status }}</td>
             <td>
