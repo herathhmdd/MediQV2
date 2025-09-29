@@ -23,7 +23,6 @@ class Patient(db.Model):
     name = db.Column(db.String(255), nullable=False)
     contact_info = db.Column(db.Text)
     red_blue_token = db.Column(db.String(50))
-    current_status = db.Column(db.String(50))
 
 class PatientVisit(db.Model):
     __tablename__ = 'patient_visits'
@@ -33,7 +32,7 @@ class PatientVisit(db.Model):
     mo_assigned_id = db.Column(db.Integer, db.ForeignKey('mediq_users.user_id'))
     nurse_assigned_id = db.Column(db.Integer, db.ForeignKey('mediq_users.user_id'))
     visit_date = db.Column(db.Date, default=date.today)
-    status = db.Column(db.String(50))
+    status = db.Column(db.Enum('waiting', 'in_consultation', 'with_nurse', 'at_pharmacy', 'completed', name='patient_visit_status'), default='waiting')
 
 class MedicalRecord(db.Model):
     __tablename__ = 'medical_records'

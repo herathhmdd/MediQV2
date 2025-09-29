@@ -11,7 +11,7 @@ def mo_dashboard():
     if current_user.clinic_role != 'Medical Officer':
         abort(403)
     # Patients waiting for MO
-    visits = PatientVisit.query.filter_by(status='Waiting for MO').order_by(PatientVisit.queue_number).all()
+    visits = PatientVisit.query.filter_by(status='waiting').order_by(PatientVisit.queue_number).all()
     return render_template('mo_dashboard.html', visits=visits)
 
 # Nurse Dashboard: Show queue and actions
@@ -21,7 +21,7 @@ def nurse_dashboard():
     if current_user.clinic_role != 'Nurse':
         abort(403)
     # Patients waiting for Nurse
-    visits = PatientVisit.query.filter_by(status='Waiting for Nurse').order_by(PatientVisit.queue_number).all()
+    visits = PatientVisit.query.filter_by(status='with_nurse').order_by(PatientVisit.queue_number).all()
     return render_template('nurse_dashboard.html', visits=visits)
 # Medical Records: List all
 @app.route('/records')
@@ -184,8 +184,7 @@ def create_patient():
             nic=form.nic.data,
             name=form.name.data,
             contact_info=form.contact_info.data,
-            red_blue_token=form.red_blue_token.data,
-            current_status=form.current_status.data
+            red_blue_token=form.red_blue_token.data
         )
         db.session.add(patient)
         db.session.commit()
@@ -216,7 +215,6 @@ def edit_patient(patient_id):
         patient.name = form.name.data
         patient.contact_info = form.contact_info.data
         patient.red_blue_token = form.red_blue_token.data
-        patient.current_status = form.current_status.data
         db.session.commit()
         flash('Patient updated successfully', 'success')
         return redirect(url_for('patient_list'))

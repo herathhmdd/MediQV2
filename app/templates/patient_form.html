@@ -32,13 +32,6 @@
             <div class="text-danger small">{{ error }}</div>
         {% endfor %}
     </div>
-    <div class="mb-3">
-        {{ form.current_status.label(class="form-label") }}
-        {{ form.current_status(class="form-control") }}
-        {% for error in form.current_status.errors %}
-            <div class="text-danger small">{{ error }}</div>
-        {% endfor %}
-    </div>
     <button type="submit" class="btn btn-success">Save</button>
     <a href="{{ url_for('patient_list') }}" class="btn btn-secondary">Cancel</a>
 </form>
