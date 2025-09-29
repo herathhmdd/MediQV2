@@ -34,7 +34,7 @@
     </div>
     <div class="mb-3">
         {{ form.visit_date.label(class="form-label") }}
-        {{ form.visit_date(class="form-control") }}
+        {{ form.visit_date(class="form-control", type="date") }}
         {% for error in form.visit_date.errors %}
             <div class="text-danger small">{{ error }}</div>
         {% endfor %}
