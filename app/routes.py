@@ -1,3 +1,9 @@
+# Move imports to top so decorators are defined
+from flask import render_template, redirect, url_for, flash, request, session, abort
+from flask_login import login_user, logout_user, login_required, current_user
+from app import app, db, bcrypt, login_manager
+from app.models import MediqUser, Patient, PatientVisit, MedicalRecord
+from app.forms import LoginForm, RegisterForm, ResetPasswordForm, NewPasswordForm
 # MO Dashboard: Show queue and actions
 @app.route('/mo_dashboard')
 @login_required

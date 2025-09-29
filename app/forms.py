@@ -1,3 +1,6 @@
+from flask_wtf import FlaskForm
+from wtforms import StringField, PasswordField, SubmitField, IntegerField, SelectField, TextAreaField
+from wtforms.validators import DataRequired, Length, Email, EqualTo
 class MedicalRecordForm(FlaskForm):
     patient_id = SelectField('Patient', coerce=int, validators=[DataRequired()])
     visit_id = SelectField('Visit', coerce=int, validators=[DataRequired()])
