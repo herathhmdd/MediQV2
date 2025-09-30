@@ -12,7 +12,15 @@ def mo_dashboard():
         abort(403)
     # Patients waiting for MO
     visits = PatientVisit.query.filter_by(status='waiting').order_by(PatientVisit.queue_number).all()
-    return render_template('mo_dashboard.html', visits=visits)
+    visit_data = []
+    for v in visits:
+        visit_data.append({
+            'visit_id': v.visit_id,
+            'patient_name': v.patient.name if v.patient else '',
+            'queue_number': v.queue_number,
+            'status': v.status
+        })
+    return render_template('mo_dashboard.html', visits=visit_data)
 
 # Nurse Dashboard: Show queue and actions
 @app.route('/nurse_dashboard')
@@ -22,7 +30,15 @@ def nurse_dashboard():
         abort(403)
     # Patients waiting for Nurse
     visits = PatientVisit.query.filter_by(nurse_assigned_id=current_user.user_id).order_by(PatientVisit.queue_number).all()
-    return render_template('nurse_dashboard.html', visits=visits)
+    visit_data = []
+    for v in visits:
+        visit_data.append({
+            'visit_id': v.visit_id,
+            'patient_name': v.patient.name if v.patient else '',
+            'queue_number': v.queue_number,
+            'status': v.status
+        })
+    return render_template('nurse_dashboard.html', visits=visit_data)
 # Medical Records: List all
 @app.route('/records')
 @login_required
@@ -182,6 +198,9 @@ def edit_visit(visit_id):
         visit.status = form.status.data
         db.session.commit()
         flash('Patient visit updated successfully', 'success')
+        # Redirect nurse to nurse_dashboard, others to visit_list
+        if current_user.clinic_role == 'Nurse':
+            return redirect(url_for('nurse_dashboard'))
         return redirect(url_for('visit_list'))
     return render_template('visit_form.html', form=form, action='Edit')
 
