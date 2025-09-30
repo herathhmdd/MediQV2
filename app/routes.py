@@ -21,7 +21,7 @@ def nurse_dashboard():
     if current_user.clinic_role != 'Nurse':
         abort(403)
     # Patients waiting for Nurse
-    visits = PatientVisit.query.filter_by(status='with_nurse').order_by(PatientVisit.queue_number).all()
+    visits = PatientVisit.query.filter_by(nurse_assigned_id=current_user.user_id).order_by(PatientVisit.queue_number).all()
     return render_template('nurse_dashboard.html', visits=visits)
 # Medical Records: List all
 @app.route('/records')
@@ -355,9 +355,9 @@ def dashboard():
     elif current_user.clinic_role == 'Clinic Staff':
         return render_template('staff_dashboard.html')
     elif current_user.clinic_role == 'Medical Officer':
-        return render_template('mo_dashboard.html')
+        return redirect(url_for('mo_dashboard'))
     elif current_user.clinic_role == 'Nurse':
-        return render_template('nurse_dashboard.html')
+        return redirect(url_for('nurse_dashboard'))
     else:
         abort(403)
 
