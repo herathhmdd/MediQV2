@@ -1,10 +1,26 @@
 {% extends 'base.html' %}
 {% block title %}Clinic Staff Dashboard - MediQ Clinic{% endblock %}
 {% block content %}
-<h2>Clinic Staff Dashboard</h2>
-<ul>
-    <li><a href="{{ url_for('create_patient') }}">Register Patient</a></li>
-    <li><a href="{{ url_for('patient_list') }}">Manage Patients</a></li>
-    <li><a href="{{ url_for('visit_list') }}">Patient Queue</a></li>
-</ul>
+<div class="row justify-content-center mt-5">
+    <div class="col-md-8">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h2 class="card-title text-center mb-4">Clinic Staff Dashboard</h2>
+                <div class="list-group">
+                    <a href="{{ url_for('create_patient') }}" class="list-group-item list-group-item-action">
+                        <i class="bi bi-person-plus me-2"></i> Register Patient
+                    </a>
+                    <a href="{{ url_for('patient_list') }}" class="list-group-item list-group-item-action">
+                        <i class="bi bi-people me-2"></i> Manage Patients
+                    </a>
+                    <a href="{{ url_for('visit_list') }}" class="list-group-item list-group-item-action">
+                        <i class="bi bi-list-ol me-2"></i> Patient Queue
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Optionally include Bootstrap Icons -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
 {% endblock %}

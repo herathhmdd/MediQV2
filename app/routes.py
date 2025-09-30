@@ -11,7 +11,8 @@ def mo_dashboard():
     if current_user.clinic_role != 'Medical Officer':
         abort(403)
     # Patients waiting for MO
-    visits = PatientVisit.query.filter_by(status='waiting').order_by(PatientVisit.queue_number).all()
+    # visits = PatientVisit.query.filter_by(status='waiting').order_by(PatientVisit.queue_number).all()
+    visits = PatientVisit.query.filter_by(mo_assigned_id=current_user.user_id).order_by(PatientVisit.queue_number).all()
     visit_data = []
     for v in visits:
         visit_data.append({
@@ -189,6 +190,7 @@ def edit_visit(visit_id):
     form.patient_id.choices = [(p.patient_id, p.name) for p in Patient.query.all()]
     form.mo_assigned_id.choices = [(u.user_id, u.first_name or u.username) for u in MediqUser.query.filter_by(clinic_role='Medical Officer').all()]
     form.nurse_assigned_id.choices = [(u.user_id, u.first_name or u.username) for u in MediqUser.query.filter_by(clinic_role='Nurse').all()]
+
     if form.validate_on_submit():
         visit.patient_id = form.patient_id.data
         visit.queue_number = form.queue_number.data
@@ -198,10 +200,13 @@ def edit_visit(visit_id):
         visit.status = form.status.data
         db.session.commit()
         flash('Patient visit updated successfully', 'success')
-        # Redirect nurse to nurse_dashboard, others to visit_list
+        # Redirect based on role after save
         if current_user.clinic_role == 'Nurse':
             return redirect(url_for('nurse_dashboard'))
+        if current_user.clinic_role == 'Medical Officer':
+            return redirect(url_for('mo_dashboard'))
         return redirect(url_for('visit_list'))
+
     return render_template('visit_form.html', form=form, action='Edit')
 
 # Patient Visits: Delete

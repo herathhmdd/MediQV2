@@ -49,6 +49,8 @@
     <button type="submit" class="btn btn-success">Save</button>
     {% if current_user.clinic_role == 'Nurse' %}
         <a href="{{ url_for('nurse_dashboard') }}" class="btn btn-secondary">Cancel</a>
+    {% elif current_user.clinic_role == 'Medical Officer' %}
+        <a href="{{ url_for('mo_dashboard') }}" class="btn btn-secondary">Cancel</a>
     {% else %}
         <a href="{{ url_for('visit_list') }}" class="btn btn-secondary">Cancel</a>
     {% endif %}
