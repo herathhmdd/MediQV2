@@ -5,7 +5,6 @@ from datetime import date
 class MedicalRecordForm(FlaskForm):
     patient_id = SelectField('Patient', coerce=int, validators=[DataRequired()])
     visit_id = SelectField('Visit', coerce=int, validators=[DataRequired()])
-    history = TextAreaField('History')
     examination_notes = TextAreaField('Examination Notes', validators=[DataRequired()])
     treatment_plan = TextAreaField('Treatment Plan', validators=[DataRequired()])
     examined_by = SelectField('Examined By', coerce=int, validators=[DataRequired()])

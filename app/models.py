@@ -44,7 +44,6 @@ class MedicalRecord(db.Model):
     record_id = db.Column(db.Integer, primary_key=True)
     patient_id = db.Column(db.Integer, db.ForeignKey('patients.patient_id'), nullable=False)
     visit_id = db.Column(db.Integer, db.ForeignKey('patient_visits.visit_id'), nullable=False)
-    history = db.Column(db.Text)
     examination_notes = db.Column(db.Text)
     treatment_plan = db.Column(db.Text)
     examined_by = db.Column(db.Integer, db.ForeignKey('mediq_users.user_id'))

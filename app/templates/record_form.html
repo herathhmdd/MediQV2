@@ -19,11 +19,6 @@
         {% endfor %}
     </div>
     <div class="mb-3">
-        {{ form.history.label(class="form-label") }}
-        {{ form.history(class="form-control") }}
-        {% for error in form.history.errors %}
-            <div class="text-danger small">{{ error }}</div>
-        {% endfor %}
     </div>
     <div class="mb-3">
         {{ form.examination_notes.label(class="form-label") }}

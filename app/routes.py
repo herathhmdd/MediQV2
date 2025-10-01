@@ -60,7 +60,6 @@ def create_record():
         record = MedicalRecord(
             patient_id=form.patient_id.data,
             visit_id=form.visit_id.data,
-            history=form.history.data,
             examination_notes=form.examination_notes.data,
             treatment_plan=form.treatment_plan.data,
             examined_by=form.examined_by.data
@@ -91,7 +90,6 @@ def edit_record(record_id):
     if form.validate_on_submit():
         record.patient_id = form.patient_id.data
         record.visit_id = form.visit_id.data
-        record.history = form.history.data
         record.examination_notes = form.examination_notes.data
         record.treatment_plan = form.treatment_plan.data
         record.examined_by = form.examined_by.data
