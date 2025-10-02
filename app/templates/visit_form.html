@@ -61,13 +61,13 @@
     </div>
     <div class="mb-3">
         {{ form.next_visit_date.label(class="form-label") }}
-        {{ form.next_visit_date(class="form-control", type="date") }}
+        {{ form.next_visit_date(class="form-control", type="date", id="next_visit_date") }}
         {% for error in form.next_visit_date.errors %}
             <div class="text-danger small">{{ error }}</div>
         {% endfor %}
     </div>
     {# Hidden reminder_sent field - not displayed in UI but maintains form functionality #}
-    {{ form.reminder_sent(style="display:none;") }}
+    {{ form.reminder_sent(style="display:none;", id="reminder_sent") }}
     <div class="mb-3">
         {{ form.status.label(class="form-label") }}
         {{ form.status(class="form-control") }}
@@ -84,4 +84,23 @@
         <a href="{{ url_for('visit_list') }}" class="btn btn-secondary">Cancel</a>
     {% endif %}
 </form>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const nextVisitDateField = document.getElementById('next_visit_date');
+    const reminderSentField = document.getElementById('reminder_sent');
+    
+    // Store the original next visit date value when page loads
+    let originalNextVisitDate = nextVisitDateField.value;
+    
+    // Listen for changes to the next visit date field
+    nextVisitDateField.addEventListener('change', function() {
+        // If the next visit date has been changed from its original value
+        if (this.value !== originalNextVisitDate) {
+            // Set reminder_sent to false (unchecked)
+            reminderSentField.checked = false;
+        }
+    });
+});
+</script>
 {% endblock %}
