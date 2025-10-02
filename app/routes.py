@@ -4,13 +4,21 @@ from flask_login import login_user, logout_user, login_required, current_user
 from app import app, db, bcrypt, login_manager
 from app.models import MediqUser, Patient, PatientVisit, MedicalRecord
 from app.forms import LoginForm, RegisterForm, ResetPasswordForm, NewPasswordForm
+import datetime
+from sqlalchemy import and_
+
+# Optional import for WhatsApp functionality
+try:
+    import pywhatkit as pwk
+    PYWHATKIT_AVAILABLE = True
+except ImportError:
+    PYWHATKIT_AVAILABLE = False
 # MO Dashboard: Show queue and actions
 @app.route('/mo_dashboard')
 @login_required
 def mo_dashboard():
     if current_user.clinic_role != 'Medical Officer':
         abort(403)
-    import datetime
     date_str = request.args.get('date', '').strip()
     query = PatientVisit.query.filter_by(mo_assigned_id=current_user.user_id)
     if date_str:
@@ -37,7 +45,6 @@ def mo_dashboard():
 def nurse_dashboard():
     if current_user.clinic_role != 'Nurse':
         abort(403)
-    import datetime
     date_str = request.args.get('date', '').strip()
     query = PatientVisit.query.filter_by(nurse_assigned_id=current_user.user_id)
     if date_str:
@@ -61,9 +68,6 @@ def nurse_dashboard():
 @app.route('/records')
 @login_required
 def record_list():
-    import datetime
-    from sqlalchemy import and_
-    
     # Get filter params
     patient_id = request.args.get('patient_id', '').strip()
     visit_id = request.args.get('visit_id', '').strip()
@@ -129,7 +133,6 @@ def record_list():
 @login_required
 def create_record():
     from app.forms import MedicalRecordForm
-    import datetime
     form = MedicalRecordForm()
     form.patient_id.choices = [(p.patient_id, p.name) for p in Patient.query.all()]
     form.visit_id.choices = [(v.visit_id, f"{v.visit_id} - {v.visit_date}") for v in PatientVisit.query.all()]
@@ -188,7 +191,6 @@ def record_detail(record_id):
 def edit_record(record_id):
     record = MedicalRecord.query.get_or_404(record_id)
     from app.forms import MedicalRecordForm
-    import datetime
     form = MedicalRecordForm(obj=record)
     form.patient_id.choices = [(p.patient_id, p.name) for p in Patient.query.all()]
     form.visit_id.choices = [(v.visit_id, f"{v.visit_id} - {v.visit_date}") for v in PatientVisit.query.all()]
@@ -233,8 +235,6 @@ def delete_record(record_id):
 @app.route('/visits')
 @login_required
 def visit_list():
-    import datetime
-    from sqlalchemy import and_
     # Get filter params
     patient = request.args.get('patient', '').strip()
     mo = request.args.get('mo', '').strip()
@@ -272,7 +272,6 @@ def create_visit():
     form.patient_id.choices = [(p.patient_id, p.name) for p in Patient.query.all()]
     form.mo_assigned_id.choices = [(u.user_id, u.first_name or u.username) for u in MediqUser.query.filter_by(clinic_role='Medical Officer').all()]
     form.nurse_assigned_id.choices = [(u.user_id, u.first_name or u.username) for u in MediqUser.query.filter_by(clinic_role='Nurse').all()]
-    import datetime
     today = form.visit_date.data or datetime.date.today()
     # Query for highest queue number for today
     highest_queue = db.session.query(db.func.max(PatientVisit.queue_number)).filter(PatientVisit.visit_date == today).scalar()
@@ -343,6 +342,55 @@ def delete_visit(visit_id):
     db.session.commit()
     flash('Patient visit deleted', 'info')
     return redirect(url_for('visit_list'))
+
+# Patient Visits: Send WhatsApp Reminder
+@app.route('/visits/<int:visit_id>/send_reminder', methods=['POST'])
+@login_required
+def send_whatsapp_reminder(visit_id):
+    # Restrict access to Clinic Staff only
+    if current_user.clinic_role != 'Clinic Staff':
+        abort(403)
+    
+    visit = PatientVisit.query.get_or_404(visit_id)
+    
+    # Check if patient has contact info
+    if not visit.patient.contact_info:
+        flash('Patient contact information is missing', 'error')
+        return redirect(url_for('visit_list'))
+    
+    # Check if next visit date is set
+    if not visit.next_visit_date:
+        flash('Next visit date is not scheduled', 'error')
+        return redirect(url_for('visit_list'))
+    
+    # Check if pywhatkit is available
+    if not PYWHATKIT_AVAILABLE:
+        flash('WhatsApp service not available. Please install pywhatkit.', 'error')
+        return redirect(url_for('visit_list'))
+    
+    try:
+        # Extract phone number from contact_info (assuming it's in +94XXXXXXXXX format)
+        phone_number = visit.patient.contact_info.strip()
+        if not phone_number.startswith('+'):
+            phone_number = '+94' + phone_number.lstrip('0')
+        
+        # Create reminder message
+        message = f"Dear {visit.patient.name},\n\nThis is a reminder for your next appointment at MediQ Clinic on {visit.next_visit_date.strftime('%Y-%m-%d')}.\n\nThank you!"
+        
+        # Send WhatsApp message immediately
+        now = datetime.datetime.now()
+        pwk.sendwhatmsg(phone_number, message, now.hour, now.minute + 1)
+        
+        # Update reminder_sent status
+        visit.reminder_sent = True
+        db.session.commit()
+        
+        flash(f'WhatsApp reminder sent successfully to {visit.patient.name}', 'success')
+        
+    except Exception as e:
+        flash(f'Failed to send WhatsApp reminder: {str(e)}', 'error')
+    
+    return redirect(url_for('visit_list'))
 # Patients: List all
 @app.route('/patients')
 @login_required
@@ -412,12 +460,6 @@ def delete_patient(patient_id):
     db.session.commit()
     flash('Patient deleted', 'info')
     return redirect(url_for('patient_list'))
-
-from flask import render_template, redirect, url_for, flash, request, session, abort
-from flask_login import login_user, logout_user, login_required, current_user
-from app import app, db, bcrypt, login_manager
-from app.models import MediqUser, Patient, PatientVisit, MedicalRecord
-from app.forms import LoginForm, RegisterForm, ResetPasswordForm, NewPasswordForm
 
 @login_manager.user_loader
 def load_user(user_id):
