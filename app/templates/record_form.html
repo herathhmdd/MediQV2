@@ -11,6 +11,22 @@
             <div class="text-danger small">{{ error }}</div>
         {% endfor %}
     </div>
+
+    {% if current_user.clinic_role == 'Medical Officer' and form.patient_id.data %}
+        {# Show current queue number for selected patient for today #}
+        {% set today = namespace(val=None) %}
+        {% set today.val = (now.strftime('%Y-%m-%d') if now else '') %}
+        {% set queue_number = None %}
+        {% for visit in visits_today %}
+            {% if visit.patient_id == form.patient_id.data %}
+                {% set queue_number = visit.queue_number %}
+            {% endif %}
+        {% endfor %}
+        <div class="mb-3">
+            <label class="form-label">Current Queue Number (Today)</label>
+            <input type="text" class="form-control" value="{{ queue_number if queue_number else 'N/A' }}" readonly>
+        </div>
+    {% endif %}
     <div class="mb-3">
         {{ form.visit_id.label(class="form-label") }}
         {{ form.visit_id(class="form-select") }}
@@ -18,8 +34,21 @@
             <div class="text-danger small">{{ error }}</div>
         {% endfor %}
     </div>
+    {% if current_user.clinic_role == 'Medical Officer' and patient_history %}
     <div class="mb-3">
+        <label class="form-label">Patient History</label>
+        <div class="border rounded p-3 bg-light" style="max-height:300px;overflow-y:auto;">
+            {% for rec in patient_history %}
+                <div class="mb-2">
+                    <strong>Visit Date:</strong> {{ rec.visit.visit_date.strftime('%d-%m-%Y') if rec.visit and rec.visit.visit_date else 'N/A' }}<br>
+                    <strong>Examination Notes:</strong> {{ rec.examination_notes or 'N/A' }}<br>
+                    <strong>Treatment Plan:</strong> {{ rec.treatment_plan or 'N/A' }}
+                </div>
+                {% if not loop.last %}<hr>{% endif %}
+            {% endfor %}
+        </div>
     </div>
+    {% endif %}
     <div class="mb-3">
         {{ form.examination_notes.label(class="form-label") }}
         {{ form.examination_notes(class="form-control") }}

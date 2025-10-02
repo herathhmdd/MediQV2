@@ -10,15 +10,23 @@ from app.forms import LoginForm, RegisterForm, ResetPasswordForm, NewPasswordFor
 def mo_dashboard():
     if current_user.clinic_role != 'Medical Officer':
         abort(403)
-    # Patients waiting for MO
-    # visits = PatientVisit.query.filter_by(status='waiting').order_by(PatientVisit.queue_number).all()
-    visits = PatientVisit.query.filter_by(mo_assigned_id=current_user.user_id).order_by(PatientVisit.queue_number).all()
+    import datetime
+    date_str = request.args.get('date', '').strip()
+    query = PatientVisit.query.filter_by(mo_assigned_id=current_user.user_id)
+    if date_str:
+        try:
+            filter_date = datetime.datetime.strptime(date_str, '%Y-%m-%d').date()
+            query = query.filter(PatientVisit.visit_date == filter_date)
+        except Exception:
+            pass
+    visits = query.order_by(PatientVisit.visit_date.desc(), PatientVisit.queue_number).all()
     visit_data = []
     for v in visits:
         visit_data.append({
             'visit_id': v.visit_id,
             'patient_name': v.patient.name if v.patient else '',
             'queue_number': v.queue_number,
+            'visit_date': v.visit_date,
             'status': v.status
         })
     return render_template('mo_dashboard.html', visits=visit_data)
@@ -29,14 +37,23 @@ def mo_dashboard():
 def nurse_dashboard():
     if current_user.clinic_role != 'Nurse':
         abort(403)
-    # Patients waiting for Nurse
-    visits = PatientVisit.query.filter_by(nurse_assigned_id=current_user.user_id).order_by(PatientVisit.queue_number).all()
+    import datetime
+    date_str = request.args.get('date', '').strip()
+    query = PatientVisit.query.filter_by(nurse_assigned_id=current_user.user_id)
+    if date_str:
+        try:
+            filter_date = datetime.datetime.strptime(date_str, '%Y-%m-%d').date()
+            query = query.filter(PatientVisit.visit_date == filter_date)
+        except Exception:
+            pass
+    visits = query.order_by(PatientVisit.visit_date.desc(), PatientVisit.queue_number).all()
     visit_data = []
     for v in visits:
         visit_data.append({
             'visit_id': v.visit_id,
             'patient_name': v.patient.name if v.patient else '',
             'queue_number': v.queue_number,
+            'visit_date': v.visit_date,
             'status': v.status
         })
     return render_template('nurse_dashboard.html', visits=visit_data)
@@ -52,10 +69,22 @@ def record_list():
 @login_required
 def create_record():
     from app.forms import MedicalRecordForm
+    import datetime
     form = MedicalRecordForm()
     form.patient_id.choices = [(p.patient_id, p.name) for p in Patient.query.all()]
     form.visit_id.choices = [(v.visit_id, f"{v.visit_id} - {v.visit_date}") for v in PatientVisit.query.all()]
     form.examined_by.choices = [(u.user_id, u.first_name or u.username) for u in MediqUser.query.filter_by(clinic_role='Medical Officer').all()]
+
+    # For Medical Officer: get today's visits and patient history
+    visits_today = []
+    patient_history = []
+    now = datetime.date.today()
+    if current_user.clinic_role == 'Medical Officer':
+        visits_today = PatientVisit.query.filter_by(visit_date=now).all()
+        selected_patient_id = form.patient_id.data or (form.patient_id.choices[0][0] if form.patient_id.choices else None)
+        if selected_patient_id:
+            patient_history = MedicalRecord.query.filter_by(patient_id=selected_patient_id).order_by(MedicalRecord.record_id.desc()).all()
+
     if form.validate_on_submit():
         record = MedicalRecord(
             patient_id=form.patient_id.data,
@@ -68,7 +97,7 @@ def create_record():
         db.session.commit()
         flash('Medical record created successfully', 'success')
         return redirect(url_for('record_list'))
-    return render_template('record_form.html', form=form, action='Create')
+    return render_template('record_form.html', form=form, action='Create', visits_today=visits_today, now=now, patient_history=patient_history)
 
 # Medical Records: View
 @app.route('/records/<int:record_id>')
@@ -83,10 +112,21 @@ def record_detail(record_id):
 def edit_record(record_id):
     record = MedicalRecord.query.get_or_404(record_id)
     from app.forms import MedicalRecordForm
+    import datetime
     form = MedicalRecordForm(obj=record)
     form.patient_id.choices = [(p.patient_id, p.name) for p in Patient.query.all()]
     form.visit_id.choices = [(v.visit_id, f"{v.visit_id} - {v.visit_date}") for v in PatientVisit.query.all()]
     form.examined_by.choices = [(u.user_id, u.first_name or u.username) for u in MediqUser.query.filter_by(clinic_role='Medical Officer').all()]
+
+    visits_today = []
+    patient_history = []
+    now = datetime.date.today()
+    if current_user.clinic_role == 'Medical Officer':
+        visits_today = PatientVisit.query.filter_by(visit_date=now).all()
+        selected_patient_id = form.patient_id.data or (form.patient_id.choices[0][0] if form.patient_id.choices else None)
+        if selected_patient_id:
+            patient_history = MedicalRecord.query.filter_by(patient_id=selected_patient_id).order_by(MedicalRecord.record_id.desc()).all()
+
     if form.validate_on_submit():
         record.patient_id = form.patient_id.data
         record.visit_id = form.visit_id.data
@@ -96,7 +136,7 @@ def edit_record(record_id):
         db.session.commit()
         flash('Medical record updated successfully', 'success')
         return redirect(url_for('record_list'))
-    return render_template('record_form.html', form=form, action='Edit')
+    return render_template('record_form.html', form=form, action='Edit', visits_today=visits_today, now=now, patient_history=patient_history)
 
 # Medical Records: Delete
 @app.route('/records/<int:record_id>/delete', methods=['POST'])
@@ -119,15 +159,13 @@ def visit_list():
     nurse = request.args.get('nurse', '').strip()
     date_str = request.args.get('date', '')
     status = request.args.get('status', '').strip()
-    # Default date to today
-    if not date_str:
-        now = datetime.date.today()
-        date_str = now.strftime('%Y-%m-%d')
-    else:
-        now = datetime.datetime.strptime(date_str, '%Y-%m-%d').date()
-    # Build query
+    # If date is provided, filter by date; otherwise, show all records
+    now = None
     query = PatientVisit.query.join(Patient)
-    filters = [PatientVisit.visit_date == now]
+    filters = []
+    if date_str:
+        now = datetime.datetime.strptime(date_str, '%Y-%m-%d').date()
+        filters.append(PatientVisit.visit_date == now)
     if patient:
         filters.append(Patient.name.ilike(f'%{patient}%'))
     if mo:
@@ -136,7 +174,10 @@ def visit_list():
         filters.append(PatientVisit.nurse_assigned.has(MediqUser.first_name.ilike(f'%{nurse}%')))
     if status:
         filters.append(PatientVisit.status == status)
-    visits = query.filter(and_(*filters)).order_by(PatientVisit.queue_number).all()
+    if filters:
+        visits = query.filter(and_(*filters)).order_by(PatientVisit.visit_date.desc(), PatientVisit.queue_number).all()
+    else:
+        visits = query.order_by(PatientVisit.visit_date.desc(), PatientVisit.queue_number).all()
     return render_template('visit_list.html', visits=visits, now=now)
 
 # Patient Visits: Create
