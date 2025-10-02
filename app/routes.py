@@ -84,6 +84,10 @@ def create_record():
         selected_patient_id = form.patient_id.data or (form.patient_id.choices[0][0] if form.patient_id.choices else None)
         if selected_patient_id:
             patient_history = MedicalRecord.query.filter_by(patient_id=selected_patient_id).order_by(MedicalRecord.record_id.desc()).all()
+            # Auto-select the latest visit for the chosen patient
+            latest_visit = PatientVisit.query.filter_by(patient_id=selected_patient_id).order_by(PatientVisit.visit_date.desc()).first()
+            if latest_visit and not form.visit_id.data:
+                form.visit_id.data = latest_visit.visit_id
 
     if form.validate_on_submit():
         record = MedicalRecord(
@@ -126,6 +130,11 @@ def edit_record(record_id):
         selected_patient_id = form.patient_id.data or (form.patient_id.choices[0][0] if form.patient_id.choices else None)
         if selected_patient_id:
             patient_history = MedicalRecord.query.filter_by(patient_id=selected_patient_id).order_by(MedicalRecord.record_id.desc()).all()
+            # Auto-select the latest visit for the chosen patient if not already set
+            if not form.visit_id.data:
+                latest_visit = PatientVisit.query.filter_by(patient_id=selected_patient_id).order_by(PatientVisit.visit_date.desc()).first()
+                if latest_visit:
+                    form.visit_id.data = latest_visit.visit_id
 
     if form.validate_on_submit():
         record.patient_id = form.patient_id.data

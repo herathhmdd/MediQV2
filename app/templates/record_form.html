@@ -41,8 +41,7 @@
             {% for rec in patient_history %}
                 <div class="mb-2">
                     <strong>Visit Date:</strong> {{ rec.visit.visit_date.strftime('%d-%m-%Y') if rec.visit and rec.visit.visit_date else 'N/A' }}<br>
-                    <strong>Examination Notes:</strong> {{ rec.examination_notes or 'N/A' }}<br>
-                    <strong>Treatment Plan:</strong> {{ rec.treatment_plan or 'N/A' }}
+                    <strong>Notes:</strong> {{ rec.examination_notes or '' }}{% if rec.examination_notes and rec.treatment_plan %} | {% endif %}{{ rec.treatment_plan or '' }}
                 </div>
                 {% if not loop.last %}<hr>{% endif %}
             {% endfor %}
