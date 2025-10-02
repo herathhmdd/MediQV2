@@ -38,7 +38,8 @@
             <th>Queue #</th>
             <th>MO</th>
             <th>Nurse</th>
-            <th>Date</th>
+            <th>Contact Number</th>
+            <th>Visit Date</th>
             <th>Status</th>
             <th>Actions</th>
         </tr>
@@ -51,6 +52,7 @@
             <td>{{ visit.queue_number }}</td>
             <td>{{ visit.mo_assigned.first_name if visit.mo_assigned else 'Not Assigned' }}</td>
             <td>{{ visit.nurse_assigned.first_name if visit.nurse_assigned else 'Not Assigned' }}</td>
+            <td>{{ visit.patient.contact_info }}</td>
             <td>{{ visit.visit_date }}</td>
             <td>{{ visit.status }}</td>
             <td>
