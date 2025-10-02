@@ -40,6 +40,7 @@
             <th>Nurse</th>
             <th>Contact Number</th>
             <th>Visit Date</th>
+            <th>Next Visit</th>
             <th>Status</th>
             <th>Actions</th>
         </tr>
@@ -54,6 +55,7 @@
             <td>{{ visit.nurse_assigned.first_name if visit.nurse_assigned else 'Not Assigned' }}</td>
             <td>{{ visit.patient.contact_info }}</td>
             <td>{{ visit.visit_date }}</td>
+            <td>{{ visit.next_visit_date if visit.next_visit_date else '-' }}</td>
             <td>{{ visit.status }}</td>
             <td>
                 <a href="{{ url_for('visit_detail', visit_id=visit.visit_id) }}" class="btn btn-info btn-sm">View</a>

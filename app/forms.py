@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField, IntegerField, SelectField, TextAreaField, DateField
+from wtforms import StringField, PasswordField, SubmitField, IntegerField, SelectField, TextAreaField, DateField, BooleanField
 from wtforms.validators import DataRequired, Length, Email, EqualTo
 from datetime import date
 class MedicalRecordForm(FlaskForm):
@@ -18,6 +18,8 @@ class PatientVisitForm(FlaskForm):
     mo_assigned_id = SelectField('MO Assigned', coerce=int)
     nurse_assigned_id = SelectField('Nurse Assigned', coerce=int)
     visit_date = DateField('Visit Date', validators=[DataRequired()], default=date.today)
+    next_visit_date = DateField('Next Visit Date')
+    reminder_sent = BooleanField('Reminder Sent')
     status = SelectField('Status', choices=[('waiting', 'Waiting'), ('in_consultation', 'In Consultation'), ('with_nurse', 'With Nurse'), ('at_pharmacy', 'At Pharmacy'), ('completed', 'Completed')], validators=[DataRequired()])
     submit = SubmitField('Save')
 class PatientForm(FlaskForm):

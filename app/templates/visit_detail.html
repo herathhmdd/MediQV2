@@ -4,11 +4,13 @@
 <h2>Visit Details</h2>
 <ul class="list-group">
     <li class="list-group-item"><strong>ID:</strong> {{ visit.visit_id }}</li>
-    <li class="list-group-item"><strong>Patient:</strong> {{ visit.patient_id }}</li>
+    <li class="list-group-item"><strong>Patient:</strong> {{ visit.patient.name if visit.patient else 'N/A' }}</li>
     <li class="list-group-item"><strong>Queue Number:</strong> {{ visit.queue_number }}</li>
-    <li class="list-group-item"><strong>MO Assigned:</strong> {{ visit.mo_assigned_id }}</li>
-    <li class="list-group-item"><strong>Nurse Assigned:</strong> {{ visit.nurse_assigned_id }}</li>
-    <li class="list-group-item"><strong>Date:</strong> {{ visit.visit_date }}</li>
+    <li class="list-group-item"><strong>MO Assigned:</strong> {{ visit.mo_assigned.first_name if visit.mo_assigned else 'N/A' }} {{ visit.mo_assigned.last_name if visit.mo_assigned else '' }}</li>
+    <li class="list-group-item"><strong>Nurse Assigned:</strong> {{ visit.nurse_assigned.first_name if visit.nurse_assigned else 'N/A' }} {{ visit.nurse_assigned.last_name if visit.nurse_assigned else '' }}</li>
+    <li class="list-group-item"><strong>Visit Date:</strong> {{ visit.visit_date }}</li>
+    <li class="list-group-item"><strong>Next Visit Date:</strong> {{ visit.next_visit_date if visit.next_visit_date else 'Not scheduled' }}</li>
+    <li class="list-group-item"><strong>Reminder Sent:</strong> {{ 'Yes' if visit.reminder_sent else 'No' }}</li>
     <li class="list-group-item"><strong>Status:</strong> {{ visit.status }}</li>
 </ul>
 <a href="{{ url_for('edit_visit', visit_id=visit.visit_id) }}" class="btn btn-warning mt-3">Edit</a>

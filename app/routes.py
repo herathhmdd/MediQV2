@@ -284,6 +284,8 @@ def create_visit():
             mo_assigned_id=form.mo_assigned_id.data,
             nurse_assigned_id=form.nurse_assigned_id.data,
             visit_date=form.visit_date.data,
+            next_visit_date=form.next_visit_date.data,
+            reminder_sent=form.reminder_sent.data,
             status=form.status.data
         )
         db.session.add(visit)
@@ -318,6 +320,8 @@ def edit_visit(visit_id):
         visit.mo_assigned_id = form.mo_assigned_id.data
         visit.nurse_assigned_id = form.nurse_assigned_id.data
         visit.visit_date = form.visit_date.data
+        visit.next_visit_date = form.next_visit_date.data
+        visit.reminder_sent = form.reminder_sent.data
         visit.status = form.status.data
         db.session.commit()
         flash('Patient visit updated successfully', 'success')

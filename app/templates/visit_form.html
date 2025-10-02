@@ -60,6 +60,15 @@
         {% endfor %}
     </div>
     <div class="mb-3">
+        {{ form.next_visit_date.label(class="form-label") }}
+        {{ form.next_visit_date(class="form-control", type="date") }}
+        {% for error in form.next_visit_date.errors %}
+            <div class="text-danger small">{{ error }}</div>
+        {% endfor %}
+    </div>
+    {# Hidden reminder_sent field - not displayed in UI but maintains form functionality #}
+    {{ form.reminder_sent(style="display:none;") }}
+    <div class="mb-3">
         {{ form.status.label(class="form-label") }}
         {{ form.status(class="form-control") }}
         {% for error in form.status.errors %}

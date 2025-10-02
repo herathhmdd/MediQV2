@@ -32,6 +32,8 @@ class PatientVisit(db.Model):
     mo_assigned_id = db.Column(db.Integer, db.ForeignKey('mediq_users.user_id'))
     nurse_assigned_id = db.Column(db.Integer, db.ForeignKey('mediq_users.user_id'))
     visit_date = db.Column(db.Date, default=date.today)
+    next_visit_date = db.Column(db.Date)
+    reminder_sent = db.Column(db.Boolean, default=False)
     status = db.Column(db.Enum('waiting', 'in_consultation', 'with_nurse', 'at_pharmacy', 'completed', name='patient_visit_status'), default='waiting')
     
     # Relationships
