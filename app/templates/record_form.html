@@ -34,20 +34,6 @@
             <div class="text-danger small">{{ error }}</div>
         {% endfor %}
     </div>
-    {% if current_user.clinic_role == 'Medical Officer' and patient_history %}
-    <div class="mb-3">
-        <label class="form-label">Patient History</label>
-        <div class="border rounded p-3 bg-light" style="max-height:300px;overflow-y:auto;">
-            {% for rec in patient_history %}
-                <div class="mb-2">
-                    <strong>Visit Date:</strong> {{ rec.visit.visit_date.strftime('%d-%m-%Y') if rec.visit and rec.visit.visit_date else 'N/A' }}<br>
-                    <strong>Notes:</strong> {{ rec.examination_notes or '' }}{% if rec.examination_notes and rec.treatment_plan %} | {% endif %}{{ rec.treatment_plan or '' }}
-                </div>
-                {% if not loop.last %}<hr>{% endif %}
-            {% endfor %}
-        </div>
-    </div>
-    {% endif %}
     <div class="mb-3">
         {{ form.presenting_complaint.label(class="form-label") }}
         {{ form.presenting_complaint(class="form-control") }}
