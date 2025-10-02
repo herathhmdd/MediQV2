@@ -44,6 +44,15 @@ class MedicalRecord(db.Model):
     record_id = db.Column(db.Integer, primary_key=True)
     patient_id = db.Column(db.Integer, db.ForeignKey('patients.patient_id'), nullable=False)
     visit_id = db.Column(db.Integer, db.ForeignKey('patient_visits.visit_id'), nullable=False)
+    presenting_complaint = db.Column(db.Text)
+    history = db.Column(db.Text)
     examination_notes = db.Column(db.Text)
+    investigation = db.Column(db.Text)
     treatment_plan = db.Column(db.Text)
-    examined_by = db.Column(db.Integer, db.ForeignKey('mediq_users.user_id'))
+    examined_by = db.Column(db.Integer, db.ForeignKey('mediq_users.user_id'), nullable=False)
+    examined_date = db.Column(db.Date, default=date.today)
+    
+    # Relationships
+    patient = db.relationship('Patient', backref='medical_records')
+    visit = db.relationship('PatientVisit', backref='medical_records')
+    examiner = db.relationship('MediqUser', backref='medical_records')

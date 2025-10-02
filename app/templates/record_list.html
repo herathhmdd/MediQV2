@@ -19,9 +19,9 @@
         {% for record in records %}
         <tr>
             <td>{{ record.record_id }}</td>
-            <td>{{ record.patient_id }}</td>
+            <td>{{ record.patient.name if record.patient else 'N/A' }}</td>
             <td>{{ record.visit_id }}</td>
-            <td>{{ record.examined_by }}</td>
+            <td>{{ record.examiner.first_name if record.examiner else 'N/A' }} {{ record.examiner.last_name if record.examiner else '' }}</td>
             <td>
                 <a href="{{ url_for('record_detail', record_id=record.record_id) }}" class="btn btn-info btn-sm">View</a>
                 <a href="{{ url_for('edit_record', record_id=record.record_id) }}" class="btn btn-warning btn-sm">Edit</a>

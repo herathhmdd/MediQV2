@@ -61,7 +61,28 @@ def nurse_dashboard():
 @app.route('/records')
 @login_required
 def record_list():
-    records = MedicalRecord.query.order_by(MedicalRecord.record_id.desc()).all()
+    patient_id = request.args.get('patient_id', '').strip()
+    visit_id = request.args.get('visit_id', '').strip()
+    
+    query = MedicalRecord.query
+    
+    # Filter by patient_id if provided
+    if patient_id:
+        try:
+            patient_id_int = int(patient_id)
+            query = query.filter_by(patient_id=patient_id_int)
+        except ValueError:
+            pass
+    
+    # Filter by visit_id if provided
+    if visit_id:
+        try:
+            visit_id_int = int(visit_id)
+            query = query.filter_by(visit_id=visit_id_int)
+        except ValueError:
+            pass
+    
+    records = query.order_by(MedicalRecord.record_id.desc()).all()
     return render_template('record_list.html', records=records)
 
 # Medical Records: Create
@@ -93,7 +114,10 @@ def create_record():
         record = MedicalRecord(
             patient_id=form.patient_id.data,
             visit_id=form.visit_id.data,
+            presenting_complaint=form.presenting_complaint.data,
+            history=form.history.data,
             examination_notes=form.examination_notes.data,
+            investigation=form.investigation.data,
             treatment_plan=form.treatment_plan.data,
             examined_by=form.examined_by.data
         )
@@ -139,7 +163,10 @@ def edit_record(record_id):
     if form.validate_on_submit():
         record.patient_id = form.patient_id.data
         record.visit_id = form.visit_id.data
+        record.presenting_complaint = form.presenting_complaint.data
+        record.history = form.history.data
         record.examination_notes = form.examination_notes.data
+        record.investigation = form.investigation.data
         record.treatment_plan = form.treatment_plan.data
         record.examined_by = form.examined_by.data
         db.session.commit()

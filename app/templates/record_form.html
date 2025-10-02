@@ -49,9 +49,30 @@
     </div>
     {% endif %}
     <div class="mb-3">
+        {{ form.presenting_complaint.label(class="form-label") }}
+        {{ form.presenting_complaint(class="form-control") }}
+        {% for error in form.presenting_complaint.errors %}
+            <div class="text-danger small">{{ error }}</div>
+        {% endfor %}
+    </div>
+    <div class="mb-3">
+        {{ form.history.label(class="form-label") }}
+        {{ form.history(class="form-control") }}
+        {% for error in form.history.errors %}
+            <div class="text-danger small">{{ error }}</div>
+        {% endfor %}
+    </div>
+    <div class="mb-3">
         {{ form.examination_notes.label(class="form-label") }}
         {{ form.examination_notes(class="form-control") }}
         {% for error in form.examination_notes.errors %}
+            <div class="text-danger small">{{ error }}</div>
+        {% endfor %}
+    </div>
+    <div class="mb-3">
+        {{ form.investigation.label(class="form-label") }}
+        {{ form.investigation(class="form-control") }}
+        {% for error in form.investigation.errors %}
             <div class="text-danger small">{{ error }}</div>
         {% endfor %}
     </div>
