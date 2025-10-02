@@ -12,24 +12,17 @@
         {% endfor %}
     </div>
 
-    {% if current_user.clinic_role == 'Medical Officer' and form.patient_id.data %}
-        {# Show current queue number for selected patient for today #}
-        {% set today = namespace(val=None) %}
-        {% set today.val = (now.strftime('%Y-%m-%d') if now else '') %}
-        {% set queue_number = None %}
-        {% for visit in visits_today %}
-            {% if visit.patient_id == form.patient_id.data %}
-                {% set queue_number = visit.queue_number %}
-            {% endif %}
-        {% endfor %}
+    {% if selected_visit %}
         <div class="mb-3">
-            <label class="form-label">Current Queue Number (Today)</label>
-            <input type="text" class="form-control" value="{{ queue_number if queue_number else 'N/A' }}" readonly>
+            <label class="form-label">Queue Number</label>
+            <input type="text" class="form-control" value="{{ selected_visit.queue_number if selected_visit.queue_number else 'N/A' }}" readonly>
         </div>
     {% endif %}
     <div class="mb-3">
         {{ form.visit_id.label(class="form-label") }}
-        {{ form.visit_id(class="form-select") }}
+        {# Hidden field to maintain the visit_id value for form submission #}
+        <input type="hidden" name="visit_id" value="{{ form.visit_id.data or '' }}">
+        <input type="text" class="form-control" value="{{ selected_visit.visit_date if selected_visit else '' }}" readonly>
         {% for error in form.visit_id.errors %}
             <div class="text-danger small">{{ error }}</div>
         {% endfor %}

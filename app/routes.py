@@ -99,6 +99,7 @@ def create_record():
     # For Medical Officer: get today's visits and patient history
     visits_today = []
     patient_history = []
+    selected_visit = None
     now = datetime.date.today()
     if current_user.clinic_role == 'Medical Officer':
         visits_today = PatientVisit.query.filter_by(visit_date=now).all()
@@ -109,6 +110,11 @@ def create_record():
             latest_visit = PatientVisit.query.filter_by(patient_id=selected_patient_id).order_by(PatientVisit.visit_date.desc()).first()
             if latest_visit and not form.visit_id.data:
                 form.visit_id.data = latest_visit.visit_id
+                selected_visit = latest_visit
+    
+    # Get selected visit for display
+    if form.visit_id.data:
+        selected_visit = PatientVisit.query.get(form.visit_id.data)
 
     if form.validate_on_submit():
         record = MedicalRecord(
@@ -125,7 +131,7 @@ def create_record():
         db.session.commit()
         flash('Medical record created successfully', 'success')
         return redirect(url_for('record_list'))
-    return render_template('record_form.html', form=form, action='Create', visits_today=visits_today, now=now, patient_history=patient_history)
+    return render_template('record_form.html', form=form, action='Create', visits_today=visits_today, now=now, patient_history=patient_history, selected_visit=selected_visit)
 
 # Medical Records: View
 @app.route('/records/<int:record_id>')
@@ -134,7 +140,6 @@ def record_detail(record_id):
     record = MedicalRecord.query.get_or_404(record_id)
     return render_template('record_detail.html', record=record)
 
-# Medical Records: Edit
 @app.route('/records/<int:record_id>/edit', methods=['GET', 'POST'])
 @login_required
 def edit_record(record_id):
@@ -147,18 +152,13 @@ def edit_record(record_id):
     form.examined_by.choices = [(u.user_id, u.first_name or u.username) for u in MediqUser.query.filter_by(clinic_role='Medical Officer').all()]
 
     visits_today = []
-    patient_history = []
+    selected_visit = None
     now = datetime.date.today()
-    if current_user.clinic_role == 'Medical Officer':
-        visits_today = PatientVisit.query.filter_by(visit_date=now).all()
-        selected_patient_id = form.patient_id.data or (form.patient_id.choices[0][0] if form.patient_id.choices else None)
-        if selected_patient_id:
-            patient_history = MedicalRecord.query.filter_by(patient_id=selected_patient_id).order_by(MedicalRecord.record_id.desc()).all()
-            # Auto-select the latest visit for the chosen patient if not already set
-            if not form.visit_id.data:
-                latest_visit = PatientVisit.query.filter_by(patient_id=selected_patient_id).order_by(PatientVisit.visit_date.desc()).first()
-                if latest_visit:
-                    form.visit_id.data = latest_visit.visit_id
+    visits_today = PatientVisit.query.filter_by(visit_date=now).all()
+    
+    # Get selected visit for display
+    if form.visit_id.data:
+        selected_visit = PatientVisit.query.get(form.visit_id.data)
 
     if form.validate_on_submit():
         record.patient_id = form.patient_id.data
@@ -172,7 +172,7 @@ def edit_record(record_id):
         db.session.commit()
         flash('Medical record updated successfully', 'success')
         return redirect(url_for('record_list'))
-    return render_template('record_form.html', form=form, action='Edit', visits_today=visits_today, now=now, patient_history=patient_history)
+    return render_template('record_form.html', form=form, action='Edit', visits_today=visits_today, now=now, selected_visit=selected_visit)
 
 # Medical Records: Delete
 @app.route('/records/<int:record_id>/delete', methods=['POST'])
