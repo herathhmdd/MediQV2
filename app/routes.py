@@ -61,28 +61,67 @@ def nurse_dashboard():
 @app.route('/records')
 @login_required
 def record_list():
+    import datetime
+    from sqlalchemy import and_
+    
+    # Get filter params
     patient_id = request.args.get('patient_id', '').strip()
     visit_id = request.args.get('visit_id', '').strip()
+    patient_name = request.args.get('patient_name', '').strip()
+    visit_date = request.args.get('visit_date', '').strip()
+    examined_by = request.args.get('examined_by', '').strip()
     
-    query = MedicalRecord.query
+    # Start with base query and proper joins
+    query = MedicalRecord.query\
+        .join(Patient, MedicalRecord.patient_id == Patient.patient_id)\
+        .join(PatientVisit, MedicalRecord.visit_id == PatientVisit.visit_id)\
+        .join(MediqUser, MedicalRecord.examined_by == MediqUser.user_id)
     
-    # Filter by patient_id if provided
+    filters = []
+    
+    # Filter by patient_id if provided (for backwards compatibility)
     if patient_id:
         try:
             patient_id_int = int(patient_id)
-            query = query.filter_by(patient_id=patient_id_int)
+            filters.append(MedicalRecord.patient_id == patient_id_int)
         except ValueError:
             pass
     
-    # Filter by visit_id if provided
+    # Filter by visit_id if provided (for backwards compatibility)
     if visit_id:
         try:
             visit_id_int = int(visit_id)
-            query = query.filter_by(visit_id=visit_id_int)
+            filters.append(MedicalRecord.visit_id == visit_id_int)
         except ValueError:
             pass
     
-    records = query.order_by(MedicalRecord.record_id.desc()).all()
+    # Filter by patient name
+    if patient_name:
+        filters.append(Patient.name.ilike(f'%{patient_name}%'))
+    
+    # Filter by visit date
+    if visit_date:
+        try:
+            filter_date = datetime.datetime.strptime(visit_date, '%Y-%m-%d').date()
+            filters.append(PatientVisit.visit_date == filter_date)
+        except ValueError:
+            pass
+    
+    # Filter by examined by (Medical Officer) - check both first and last name
+    if examined_by:
+        filters.append(
+            db.or_(
+                MediqUser.first_name.ilike(f'%{examined_by}%'),
+                MediqUser.last_name.ilike(f'%{examined_by}%'),
+                db.func.concat(MediqUser.first_name, ' ', MediqUser.last_name).ilike(f'%{examined_by}%')
+            )
+        )
+    
+    if filters:
+        records = query.filter(and_(*filters)).order_by(MedicalRecord.record_id.desc()).all()
+    else:
+        records = query.order_by(MedicalRecord.record_id.desc()).all()
+    
     return render_template('record_list.html', records=records)
 
 # Medical Records: Create

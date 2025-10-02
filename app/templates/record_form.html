@@ -6,15 +6,20 @@
     {{ form.hidden_tag() }}
     <div class="mb-3">
         {{ form.patient_id.label(class="form-label") }}
-        {# Hidden field to maintain the patient_id value for form submission #}
-        <input type="hidden" name="patient_id" value="{{ form.patient_id.data or '' }}">
-        <input type="text" class="form-control" value="{{ selected_patient.name if selected_patient else '' }}" readonly>
+        {% if action == 'Create' %}
+            {# Show dropdown for creating new records #}
+            {{ form.patient_id(class="form-select") }}
+        {% else %}
+            {# Show readonly field for editing existing records #}
+            <input type="hidden" name="patient_id" value="{{ form.patient_id.data or '' }}">
+            <input type="text" class="form-control" value="{{ selected_patient.name if selected_patient else '' }}" readonly>
+        {% endif %}
         {% for error in form.patient_id.errors %}
             <div class="text-danger small">{{ error }}</div>
         {% endfor %}
     </div>
 
-    {% if selected_visit %}
+    {% if selected_visit and action == 'Edit' %}
         <div class="mb-3">
             <label class="form-label">Queue Number</label>
             <input type="text" class="form-control" value="{{ selected_visit.queue_number if selected_visit.queue_number else 'N/A' }}" readonly>
@@ -22,9 +27,14 @@
     {% endif %}
     <div class="mb-3">
         {{ form.visit_id.label(class="form-label") }}
-        {# Hidden field to maintain the visit_id value for form submission #}
-        <input type="hidden" name="visit_id" value="{{ form.visit_id.data or '' }}">
-        <input type="text" class="form-control" value="{{ selected_visit.visit_date if selected_visit else '' }}" readonly>
+        {% if action == 'Create' %}
+            {# Show dropdown for creating new records #}
+            {{ form.visit_id(class="form-select") }}
+        {% else %}
+            {# Show readonly field for editing existing records #}
+            <input type="hidden" name="visit_id" value="{{ form.visit_id.data or '' }}">
+            <input type="text" class="form-control" value="{{ selected_visit.visit_date if selected_visit else '' }}" readonly>
+        {% endif %}
         {% for error in form.visit_id.errors %}
             <div class="text-danger small">{{ error }}</div>
         {% endfor %}
