@@ -4,14 +4,14 @@
 <h2>Record Details</h2>
 <ul class="list-group">
     <li class="list-group-item"><strong>ID:</strong> {{ record.record_id }}</li>
-    <li class="list-group-item"><strong>Patient:</strong> {{ record.patient_id }}</li>
+    <li class="list-group-item"><strong>Patient:</strong> {{ record.patient.name if record.patient else 'N/A' }}</li>
     <li class="list-group-item"><strong>Visit:</strong> {{ record.visit_id }}</li>
     <li class="list-group-item"><strong>Presenting Complaint:</strong> {{ record.presenting_complaint }}</li>
     <li class="list-group-item"><strong>History:</strong> {{ record.history }}</li>
     <li class="list-group-item"><strong>Examination Notes:</strong> {{ record.examination_notes }}</li>
     <li class="list-group-item"><strong>Investigation:</strong> {{ record.investigation }}</li>
     <li class="list-group-item"><strong>Treatment Plan:</strong> {{ record.treatment_plan }}</li>
-    <li class="list-group-item"><strong>Examined By:</strong> {{ record.examined_by }}</li>
+    <li class="list-group-item"><strong>Examined By:</strong> {{ record.examiner.first_name if record.examiner else 'N/A' }} {{ record.examiner.last_name if record.examiner else '' }}</li>
     <li class="list-group-item"><strong>Examined Date:</strong> {{ record.examined_date }}</li>
 </ul>
 <a href="{{ url_for('edit_record', record_id=record.record_id) }}" class="btn btn-warning mt-3">Edit</a>
