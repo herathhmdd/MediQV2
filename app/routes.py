@@ -609,3 +609,40 @@ def delete_user(user_id):
     db.session.commit()
     flash('User deleted', 'info')
     return redirect(url_for('user_list'))
+
+# Reports Module
+@app.route('/reports')
+@login_required
+def reports_list():
+    """Display list of available reports"""
+    if current_user.clinic_role not in ['Admin', 'Clinic Staff', 'Medical Officer', 'Nurse']:
+        abort(403)
+    
+    from app.reports import get_available_reports
+    reports = get_available_reports()
+    return render_template('reports_list.html', reports=reports)
+
+@app.route('/reports/<string:report_id>')
+@login_required
+def view_report(report_id):
+    """Display a specific report"""
+    if current_user.clinic_role not in ['Admin', 'Clinic Staff', 'Medical Officer', 'Nurse']:
+        abort(403)
+    
+    from app.reports import generate_report, get_available_reports
+    
+    # Get report metadata
+    reports = get_available_reports()
+    report_info = next((r for r in reports if r['id'] == report_id), None)
+    
+    if not report_info:
+        flash('Report not found', 'error')
+        return redirect(url_for('reports_list'))
+    
+    # Generate the report
+    report_html = generate_report(report_id)
+    
+    return render_template('report_view.html', 
+                         report_html=report_html, 
+                         report_info=report_info,
+                         current_datetime=datetime.datetime.now())
