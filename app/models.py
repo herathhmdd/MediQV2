@@ -22,6 +22,8 @@ class Patient(db.Model):
     nic = db.Column(db.String(50), unique=True, nullable=False)
     name = db.Column(db.String(255), nullable=False)
     contact_info = db.Column(db.Text)
+    address = db.Column(db.Text)
+    custodian_details = db.Column(db.Text)
     red_blue_token = db.Column(db.String(50))
 
 class PatientVisit(db.Model):

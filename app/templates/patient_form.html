@@ -26,6 +26,20 @@
         {% endfor %}
     </div>
     <div class="mb-3">
+        {{ form.address.label(class="form-label") }}
+        {{ form.address(class="form-control") }}
+        {% for error in form.address.errors %}
+            <div class="text-danger small">{{ error }}</div>
+        {% endfor %}
+    </div>
+    <div class="mb-3">
+        {{ form.custodian_details.label(class="form-label") }}
+        {{ form.custodian_details(class="form-control") }}
+        {% for error in form.custodian_details.errors %}
+            <div class="text-danger small">{{ error }}</div>
+        {% endfor %}
+    </div>
+    <div class="mb-3">
         {{ form.red_blue_token.label(class="form-label") }}
         {{ form.red_blue_token(class="form-select") }}
         {% for error in form.red_blue_token.errors %}

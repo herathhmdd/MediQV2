@@ -10,6 +10,8 @@
             <th>NIC</th>
             <th>Name</th>
             <th>Contact Info</th>
+            <th>Address</th>
+            <th>Custodian Details</th>
             <th>Token</th>
             <th>Actions</th>
         </tr>
@@ -20,7 +22,9 @@
             <td>{{ patient.patient_id }}</td>
             <td>{{ patient.nic }}</td>
             <td>{{ patient.name }}</td>
-            <td>{{ patient.contact_info }}</td>
+            <td>{{ patient.contact_info or 'N/A' }}</td>
+            <td>{{ patient.address[:30] + '...' if patient.address and patient.address|length > 30 else (patient.address or 'N/A') }}</td>
+            <td>{{ patient.custodian_details[:30] + '...' if patient.custodian_details and patient.custodian_details|length > 30 else (patient.custodian_details or 'N/A') }}</td>
             <td>{{ patient.red_blue_token }}</td>
             <td>
                 <a href="{{ url_for('patient_detail', patient_id=patient.patient_id) }}" class="btn btn-info btn-sm">View</a>

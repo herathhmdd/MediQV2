@@ -6,7 +6,9 @@
     <li class="list-group-item"><strong>ID:</strong> {{ patient.patient_id }}</li>
     <li class="list-group-item"><strong>NIC:</strong> {{ patient.nic }}</li>
     <li class="list-group-item"><strong>Name:</strong> {{ patient.name }}</li>
-    <li class="list-group-item"><strong>Contact Info:</strong> {{ patient.contact_info }}</li>
+    <li class="list-group-item"><strong>Contact Info:</strong> {{ patient.contact_info or 'N/A' }}</li>
+    <li class="list-group-item"><strong>Address:</strong> {{ patient.address or 'N/A' }}</li>
+    <li class="list-group-item"><strong>Custodian Details:</strong> {{ patient.custodian_details or 'N/A' }}</li>
     <li class="list-group-item"><strong>Token:</strong> {{ patient.red_blue_token }}</li>
 </ul>
 <a href="{{ url_for('edit_patient', patient_id=patient.patient_id) }}" class="btn btn-warning mt-3">Edit</a>

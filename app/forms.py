@@ -28,6 +28,8 @@ class PatientForm(FlaskForm):
     nic = StringField('NIC', validators=[DataRequired(), Length(max=50)])
     name = StringField('Name', validators=[DataRequired(), Length(max=255)])
     contact_info = StringField('Contact Info', validators=[Length(max=255)])
+    address = TextAreaField('Address')
+    custodian_details = TextAreaField('Custodian Details')
     red_blue_token = SelectField('Token', choices=[('Red', 'Red'), ('Blue', 'Blue')], validators=[DataRequired()])
     submit = SubmitField('Save')
 from flask_wtf import FlaskForm

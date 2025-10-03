@@ -417,6 +417,8 @@ def create_patient():
             nic=form.nic.data,
             name=form.name.data,
             contact_info=form.contact_info.data,
+            address=form.address.data,
+            custodian_details=form.custodian_details.data,
             red_blue_token=form.red_blue_token.data
         )
         db.session.add(patient)
@@ -447,6 +449,8 @@ def edit_patient(patient_id):
         patient.nic = form.nic.data
         patient.name = form.name.data
         patient.contact_info = form.contact_info.data
+        patient.address = form.address.data
+        patient.custodian_details = form.custodian_details.data
         patient.red_blue_token = form.red_blue_token.data
         db.session.commit()
         flash('Patient updated successfully', 'success')
