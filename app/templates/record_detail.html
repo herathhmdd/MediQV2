@@ -11,6 +11,8 @@
     <li class="list-group-item"><strong>Examination Notes:</strong> {{ record.examination_notes }}</li>
     <li class="list-group-item"><strong>Investigation:</strong> {{ record.investigation }}</li>
     <li class="list-group-item"><strong>Treatment Plan:</strong> {{ record.treatment_plan }}</li>
+    <li class="list-group-item"><strong>Diagnosis:</strong> {{ record.diagnosis or 'N/A' }}</li>
+    <li class="list-group-item"><strong>ICD-10 Code:</strong> {{ record.icd_10_code or 'N/A' }}</li>
     <li class="list-group-item"><strong>Examined By:</strong> {{ record.examiner.first_name if record.examiner else 'N/A' }} {{ record.examiner.last_name if record.examiner else '' }}</li>
     <li class="list-group-item"><strong>Examined Date:</strong> {{ record.examined_date }}</li>
 </ul>

@@ -171,6 +171,8 @@ def create_record():
             examination_notes=form.examination_notes.data,
             investigation=form.investigation.data,
             treatment_plan=form.treatment_plan.data,
+            diagnosis=form.diagnosis.data,
+            icd_10_code=form.icd_10_code.data,
             examined_by=form.examined_by.data
         )
         db.session.add(record)
@@ -216,6 +218,8 @@ def edit_record(record_id):
         record.examination_notes = form.examination_notes.data
         record.investigation = form.investigation.data
         record.treatment_plan = form.treatment_plan.data
+        record.diagnosis = form.diagnosis.data
+        record.icd_10_code = form.icd_10_code.data
         record.examined_by = form.examined_by.data
         db.session.commit()
         flash('Medical record updated successfully', 'success')

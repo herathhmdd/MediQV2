@@ -75,6 +75,20 @@
         {% endfor %}
     </div>
     <div class="mb-3">
+        {{ form.diagnosis.label(class="form-label") }}
+        {{ form.diagnosis(class="form-control") }}
+        {% for error in form.diagnosis.errors %}
+            <div class="text-danger small">{{ error }}</div>
+        {% endfor %}
+    </div>
+    <div class="mb-3">
+        {{ form.icd_10_code.label(class="form-label") }}
+        {{ form.icd_10_code(class="form-control") }}
+        {% for error in form.icd_10_code.errors %}
+            <div class="text-danger small">{{ error }}</div>
+        {% endfor %}
+    </div>
+    <div class="mb-3">
         {{ form.examined_by.label(class="form-label") }}
         {{ form.examined_by(class="form-select") }}
         {% for error in form.examined_by.errors %}

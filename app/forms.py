@@ -10,6 +10,8 @@ class MedicalRecordForm(FlaskForm):
     examination_notes = TextAreaField('Examination Notes', validators=[DataRequired()])
     investigation = TextAreaField('Investigation')
     treatment_plan = TextAreaField('Treatment Plan', validators=[DataRequired()])
+    diagnosis = TextAreaField('Diagnosis')
+    icd_10_code = StringField('ICD-10 Code', validators=[Length(max=50)])
     examined_by = SelectField('Examined By', coerce=int, validators=[DataRequired()])
     submit = SubmitField('Save')
 class PatientVisitForm(FlaskForm):

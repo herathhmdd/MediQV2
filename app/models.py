@@ -51,6 +51,8 @@ class MedicalRecord(db.Model):
     examination_notes = db.Column(db.Text)
     investigation = db.Column(db.Text)
     treatment_plan = db.Column(db.Text)
+    diagnosis = db.Column(db.Text)
+    icd_10_code = db.Column(db.String(50))
     examined_by = db.Column(db.Integer, db.ForeignKey('mediq_users.user_id'), nullable=False)
     examined_date = db.Column(db.Date, default=date.today)
     
