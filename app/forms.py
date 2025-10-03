@@ -19,7 +19,7 @@ class PatientVisitForm(FlaskForm):
     queue_number = IntegerField('Queue Number', validators=[DataRequired()])
     mo_assigned_id = SelectField('MO Assigned', coerce=int)
     nurse_assigned_id = SelectField('Nurse Assigned', coerce=int)
-    visit_date = DateField('Visit Date', validators=[DataRequired()], default=date.today)
+    visit_date = DateField('Visit Date', default=date.today)
     next_visit_date = DateField('Next Visit Date')
     reminder_sent = BooleanField('Reminder Sent')
     status = SelectField('Status', choices=[('waiting', 'Waiting'), ('in_consultation', 'In Consultation'), ('with_nurse', 'With Nurse'), ('at_pharmacy', 'At Pharmacy'), ('completed', 'Completed')], validators=[DataRequired()])

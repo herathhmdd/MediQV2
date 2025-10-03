@@ -11,8 +11,12 @@ from sqlalchemy import and_
 try:
     import pywhatkit as pwk
     PYWHATKIT_AVAILABLE = True
-except ImportError:
+except (ImportError, Exception) as e:
+    # Handle both import errors and internet connection issues
     PYWHATKIT_AVAILABLE = False
+    pwk = None
+    print(f"Warning: PyWhatKit not available - {str(e)}")
+
 # MO Dashboard: Show queue and actions
 @app.route('/mo_dashboard')
 @login_required
@@ -369,7 +373,7 @@ def send_whatsapp_reminder(visit_id):
     
     # Check if pywhatkit is available
     if not PYWHATKIT_AVAILABLE:
-        flash('WhatsApp service not available. Please install pywhatkit.', 'error')
+        flash('WhatsApp service not available due to internet connectivity issues. Please check your connection and try again.', 'warning')
         return redirect(url_for('visit_list'))
     
     try:
@@ -392,7 +396,12 @@ def send_whatsapp_reminder(visit_id):
         flash(f'WhatsApp reminder sent successfully to {visit.patient.name}', 'success')
         
     except Exception as e:
-        flash(f'Failed to send WhatsApp reminder: {str(e)}', 'error')
+        # Handle various WhatsApp sending errors gracefully
+        error_msg = str(e)
+        if 'internet' in error_msg.lower() or 'connection' in error_msg.lower():
+            flash('WhatsApp reminder failed: Internet connection issue. Please check your connection and try again.', 'warning')
+        else:
+            flash(f'WhatsApp reminder failed: {error_msg}. The system continues to work normally.', 'warning')
     
     return redirect(url_for('visit_list'))
 # Patients: List all
