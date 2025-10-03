@@ -1,7 +1,20 @@
+# Import statements - organized at top of file
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField, IntegerField, SelectField, TextAreaField, DateField, BooleanField
+from wtforms import (
+    StringField, PasswordField, SubmitField, IntegerField, 
+    SelectField, TextAreaField, DateField, BooleanField, ValidationError
+)
 from wtforms.validators import DataRequired, Length, Email, EqualTo
 from datetime import date
+import re
+
+# Custom validator function
+def validate_sri_lanka_contact(form, field):
+    pattern = r"^\+94\d{9}$"
+    if not re.match(pattern, field.data):
+        raise ValidationError('Contact number must be in the format +94XXXXXXXXX (9 digits after +94)')
+
+# Form classes
 class MedicalRecordForm(FlaskForm):
     patient_id = SelectField('Patient', coerce=int, validators=[DataRequired()])
     visit_id = SelectField('Visit', coerce=int, validators=[DataRequired()])
@@ -14,6 +27,7 @@ class MedicalRecordForm(FlaskForm):
     icd_10_code = StringField('ICD-10 Code', validators=[Length(max=50)])
     examined_by = SelectField('Examined By', coerce=int, validators=[DataRequired()])
     submit = SubmitField('Save')
+
 class PatientVisitForm(FlaskForm):
     patient_id = SelectField('Patient', coerce=int, validators=[DataRequired()])
     queue_number = IntegerField('Queue Number', validators=[DataRequired()])
@@ -24,6 +38,7 @@ class PatientVisitForm(FlaskForm):
     reminder_sent = BooleanField('Reminder Sent')
     status = SelectField('Status', choices=[('waiting', 'Waiting'), ('in_consultation', 'In Consultation'), ('with_nurse', 'With Nurse'), ('at_pharmacy', 'At Pharmacy'), ('completed', 'Completed')], validators=[DataRequired()])
     submit = SubmitField('Save')
+
 class PatientForm(FlaskForm):
     nic = StringField('NIC', validators=[DataRequired(), Length(max=50)])
     name = StringField('Name', validators=[DataRequired(), Length(max=255)])
@@ -32,21 +47,11 @@ class PatientForm(FlaskForm):
     custodian_details = TextAreaField('Custodian Details')
     red_blue_token = SelectField('Token', choices=[('Red', 'Red'), ('Blue', 'Blue')], validators=[DataRequired()])
     submit = SubmitField('Save')
-from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField, SelectField, TextAreaField, IntegerField
-from wtforms.validators import DataRequired, Email, Length, EqualTo
-import re
-from wtforms import ValidationError
 
 class LoginForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired()])
     password = PasswordField('Password', validators=[DataRequired()])
     submit = SubmitField('Login')
-
-def validate_sri_lanka_contact(form, field):
-    pattern = r"^\+94\d{9}$"
-    if not re.match(pattern, field.data):
-        raise ValidationError('Contact number must be in the format +94XXXXXXXXX (9 digits after +94)')
 
 class RegisterForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired(), Length(min=3, max=100)])
