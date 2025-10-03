@@ -61,7 +61,8 @@
     </div>
     <div class="mb-3">
         {{ form.next_visit_date.label(class="form-label") }}
-        {{ form.next_visit_date(class="form-control", type="date", id="next_visit_date") }}
+        {{ form.next_visit_date(class="form-control", type="date", id="next_visit_date", placeholder="") }}
+        <div class="form-text">Optional: Leave empty if no next visit is scheduled</div>
         {% for error in form.next_visit_date.errors %}
             <div class="text-danger small">{{ error }}</div>
         {% endfor %}

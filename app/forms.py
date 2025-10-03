@@ -34,7 +34,7 @@ class PatientVisitForm(FlaskForm):
     mo_assigned_id = SelectField('MO Assigned', coerce=int)
     nurse_assigned_id = SelectField('Nurse Assigned', coerce=int)
     visit_date = DateField('Visit Date', default=date.today)
-    next_visit_date = DateField('Next Visit Date')
+    next_visit_date = StringField('Next Visit Date')  # Changed to StringField to avoid DateField validation
     reminder_sent = BooleanField('Reminder Sent')
     status = SelectField('Status', choices=[('waiting', 'Waiting'), ('in_consultation', 'In Consultation'), ('with_nurse', 'With Nurse'), ('at_pharmacy', 'At Pharmacy'), ('completed', 'Completed')], validators=[DataRequired()])
     submit = SubmitField('Save')

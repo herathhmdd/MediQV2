@@ -285,13 +285,32 @@ def create_visit():
     highest_queue = db.session.query(db.func.max(PatientVisit.queue_number)).filter(PatientVisit.visit_date == today).scalar()
     next_queue_number = 1 if highest_queue is None else highest_queue + 1
     if form.validate_on_submit():
+        # Handle next_visit_date string input - convert to date or set to None
+        next_visit_str = form.next_visit_date.data
+        next_visit_date = None
+        if next_visit_str and next_visit_str.strip():
+            try:
+                from datetime import datetime
+                # Try multiple date formats
+                for date_format in ['%Y-%m-%d', '%m/%d/%Y', '%d/%m/%Y']:
+                    try:
+                        next_visit_date = datetime.strptime(next_visit_str, date_format).date()
+                        break
+                    except ValueError:
+                        continue
+                else:
+                    # If no format worked, set to None
+                    next_visit_date = None
+            except Exception:
+                next_visit_date = None
+        
         visit = PatientVisit(
             patient_id=form.patient_id.data,
             queue_number=next_queue_number,
             mo_assigned_id=form.mo_assigned_id.data,
             nurse_assigned_id=form.nurse_assigned_id.data,
-            visit_date=form.visit_date.data,
-            next_visit_date=form.next_visit_date.data,
+            visit_date=form.visit_date.data if form.visit_date.data else None,
+            next_visit_date=next_visit_date,
             reminder_sent=form.reminder_sent.data,
             status=form.status.data
         )
@@ -316,18 +335,52 @@ def visit_detail(visit_id):
 def edit_visit(visit_id):
     visit = PatientVisit.query.get_or_404(visit_id)
     from app.forms import PatientVisitForm
-    form = PatientVisitForm(obj=visit)
+    form = PatientVisitForm()
     form.patient_id.choices = [(p.patient_id, p.name) for p in Patient.query.all()]
     form.mo_assigned_id.choices = [(u.user_id, u.first_name or u.username) for u in MediqUser.query.filter_by(clinic_role='Medical Officer').all()]
     form.nurse_assigned_id.choices = [(u.user_id, u.first_name or u.username) for u in MediqUser.query.filter_by(clinic_role='Nurse').all()]
+    
+    # Handle GET request - populate form with existing data
+    if request.method == 'GET':
+        form.patient_id.data = visit.patient_id
+        form.queue_number.data = visit.queue_number
+        form.mo_assigned_id.data = visit.mo_assigned_id
+        form.nurse_assigned_id.data = visit.nurse_assigned_id
+        form.visit_date.data = visit.visit_date
+        form.reminder_sent.data = visit.reminder_sent
+        form.status.data = visit.status
+        # Convert existing next_visit_date to string for the form display
+        if visit.next_visit_date:
+            form.next_visit_date.data = visit.next_visit_date.strftime('%Y-%m-%d')
+        else:
+            form.next_visit_date.data = ''
 
     if form.validate_on_submit():
         visit.patient_id = form.patient_id.data
         visit.queue_number = form.queue_number.data
         visit.mo_assigned_id = form.mo_assigned_id.data
         visit.nurse_assigned_id = form.nurse_assigned_id.data
-        visit.visit_date = form.visit_date.data
-        visit.next_visit_date = form.next_visit_date.data
+        # Handle visit_date - allow None/empty values
+        visit.visit_date = form.visit_date.data if form.visit_date.data else None
+        # Handle next_visit_date string input - convert to date or set to None
+        next_visit_str = form.next_visit_date.data
+        if next_visit_str and next_visit_str.strip():
+            try:
+                from datetime import datetime
+                # Try multiple date formats
+                for date_format in ['%Y-%m-%d', '%m/%d/%Y', '%d/%m/%Y']:
+                    try:
+                        visit.next_visit_date = datetime.strptime(next_visit_str, date_format).date()
+                        break
+                    except ValueError:
+                        continue
+                else:
+                    # If no format worked, set to None
+                    visit.next_visit_date = None
+            except Exception:
+                visit.next_visit_date = None
+        else:
+            visit.next_visit_date = None
         visit.reminder_sent = form.reminder_sent.data
         visit.status = form.status.data
         db.session.commit()
